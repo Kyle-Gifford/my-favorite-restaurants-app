@@ -1,24 +1,16 @@
-//google_api_key
-//fav_strings
-maps_script = '<script async defer src="https://maps.googleapis.com/maps/api/js?key=' + google_api_key + '&v=3&callback=initMap"></script>'
+var AppViewModel = function(){
 
-$("body").append(maps_script)
-
-var Model = function(){
-  this.locations = ko.observableArray();
-}
-
-var ViewModel = function(){
-
-  this.active_toggle = function(){
-    if (this.active == true) {
-      this.active = false
-    } else {
-      this.active = true
-    }
-  }
+  this.markers = [];
 
 }
 
+ko.applyBindings(new AppViewModel());
 
-ko.applyBindings(new ViewModel());
+
+// load map script from secret api key
+var tag = document.createElement('script');
+tag.async = true;
+tag.defer = true;
+tag.src = 'https://maps.googleapis.com/maps/api/js?key='+ google_api_key +'&v=3&callback=initMap';
+var firstScriptTag = document.getElementsByTagName('script')[0];
+firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
