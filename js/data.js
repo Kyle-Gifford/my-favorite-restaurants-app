@@ -1,0 +1,1 @@
+var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, San Francisco', 'Souvla, San Francisco']
