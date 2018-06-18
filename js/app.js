@@ -1,11 +1,18 @@
-var AppViewModel = function(){
+var Marker = function() {
+  this.restaurant_strings = fav_strings;
+}
 
-  this.markers = [];
+var AppViewModel = function(){
+  this.markers = ko.observableArray();
+
+  this.addMarker = function(data){
+    console.log(data)
+  };
 
 }
 
-ko.applyBindings(new AppViewModel());
 
+ko.applyBindings(new AppViewModel());
 
 // load map script from secret api key
 var tag = document.createElement('script');
