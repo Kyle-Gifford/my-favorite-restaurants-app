@@ -11,11 +11,19 @@
     <link rel="stylesheet" href="css/style.css">
 </head>
 <body>
-    <div id="ham"><i class="fas fa-bars"></i></div>
-    <div id="sidebar">woo<br>sdfas<br>saaaa<br>sdfas<br>saaaa<br>sdfas<br>saaaa</div>
+    <div class="dropdown" data-bind="click: handleMenuClick">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+        Menu
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" data-bind="style: { display: dropdownVisible() > 0 ? 'inherit' : 'none' }">
+        <a class="dropdown-item" href="#">Kyle's Favorite Restaurants</a>
+        <!-- <a class="dropdown-item" href="#">Additional dropdown item</a> -->
+      </div>
+    </div>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
     <div id="map">
     </div>
-    <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" integrity="sha256-3edrmyuQ0w65f8gfBsqowzjJe2iM6n0nKciPUp8y+7E=" crossorigin="anonymous"></script>
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js'></script>
     <script src="js/google_api_key.js"></script>
     <script src="js/data.js"></script>
