@@ -2,17 +2,15 @@ var Model = {
   "restaurants": fav_strings
 };
 
+var yo = function(){
+  console.log('yo');
+}
+
 var AppViewModel = function(){
 
   this.markers = ko.observableArray();
 
-  this.visible = 0;
-
-  if (window.innerWidth > 330 ){
-     this.visible = 1;
-  };
-
-  this.dropdownVisible = ko.observable(this.visible);
+  this.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0);
 
   this.addMarker = function(data){
     console.log(data)
@@ -23,6 +21,7 @@ var AppViewModel = function(){
   };
 
 };
+
 
 
 ko.applyBindings(new AppViewModel());
