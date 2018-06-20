@@ -9,9 +9,11 @@ var Model = function(){
   this.loadGoogle = loadGoogle;
   this.googleLoadedCallback = googleLoadedCallback;
   this.initMap = initMap;
+  this.addZomatoRatingtoLocs = addZomatoRatingtoLocs;
+
   this.init = function(){
     self.loadGoogle();
-    cl('model init ran')
+    cl('model initializing')
   };
 
 
@@ -22,10 +24,11 @@ model = new Model();
 
 var AppViewModel = function(){
   this.init = function(){
-    console.log('AppViewModel init ran');
+    console.log('AppViewModel initializing');
+    console.log(self.model.locs);
   }
-
   this.model = model;
+
 
   this.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0);
 

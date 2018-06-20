@@ -9,20 +9,37 @@ var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Fra
 var geocoder;
 var map;
 
+var addZomatoRatingtoLocs = function(model, locations){
+  cl('zomato');
+}
+
 var getLocs = function(){
   geocoder = new google.maps.Geocoder();
   var requests = [];
   fav_strings.forEach(function(name){
     requests.push({address: name})
   });
-  var places = [];
   function geocodes_complete_callback(){
     cl('all geocodes complete');
+    model.addZomatoRatingtoLocs(model, model.locs);
   }
   var geocodes_completed = 0;
   requests.forEach(function(request){
     geocoder.geocode( { 'address': request.address}, function(results, status) {
-      model.locs.push(results[0]);
+      current = results[0];
+      var placesService = new google.maps.places.PlacesService(map);
+      placesService.textSearch({
+          query: request.address
+          // bounds: bounds
+        }, function(results, status) {
+          if (status === google.maps.places.PlacesServiceStatus.OK) {
+            // createMarkersForPlaces(results);
+            current['name'] = results[0].name;
+            current['position'] = {lat: current.geometry.location.lat(), lng: current.geometry.location.lng()}
+            model.locs.push(current)
+
+          }
+        });
       geocodes_completed ++;
       if (geocodes_completed >= requests.length){geocodes_complete_callback();};
   });
@@ -33,7 +50,7 @@ var loadGoogle = function(){
   var tag = document.createElement('script');
   tag.async = true;
   tag.defer = true;
-  tag.src = 'https://maps.googleapis.com/maps/api/js?key='+ google_api_key +'&v=3&callback=googleLoadedCallback';
+  tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ google_api_key +'&v=3&callback=googleLoadedCallback';
   var firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
