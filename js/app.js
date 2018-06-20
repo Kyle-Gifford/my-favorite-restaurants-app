@@ -14,7 +14,6 @@ var Model = function(){
 
   this.init = function(){
     self.loadGoogle();
-    cl('model initializing')
   };
 
 
@@ -38,7 +37,6 @@ var AppViewModel = function(){
   };
 
   this.handleMenuClick = function(self){
-    cl(self.model);
     self.dropdownVisible() ? self.dropdownVisible(0) : self.dropdownVisible(1);
   };
 
