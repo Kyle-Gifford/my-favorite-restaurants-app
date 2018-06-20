@@ -3,7 +3,6 @@
 var Model = function(){
   this.locs = [];
   this.api_key = google_api_key;
-  this.zomato_api_key = zomato_api_key;
   this.fav_strings = fav_strings;
   this.styles = styles;
   this.getLocs = getLocs;
