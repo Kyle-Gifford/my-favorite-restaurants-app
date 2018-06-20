@@ -37,20 +37,19 @@ var getLocs = function(){
     model.addZomatoRatingtoLocs();
   }
   var geocodes_completed = 0;
+  model.locs = [];
   requests.forEach(function(request){
+    var current = {};
     geocoder.geocode( { 'address': request.address}, function(results, status) {
-      current = results[0];
+      current["address"] = results[0].formatted_address;
+      current["position"] = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()}
       var placesService = new google.maps.places.PlacesService(map);
       placesService.textSearch({
           query: request.address
-          // bounds: bounds
-        }, function(results, status) {
+        }, function(iresults, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
-            // createMarkersForPlaces(results);
-            current['name'] = results[0].name;
-            current['position'] = {lat: current.geometry.location.lat(), lng: current.geometry.location.lng()}
+            current['name'] = iresults[0].name;
             model.locs.push(current)
-
           }
         });
       geocodes_completed ++;
