@@ -3,14 +3,27 @@ var cl = function(i){
   console.log(i);
 };
 
+cl(zomato_api_key);
+
 
 var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes, San Francisco'];
 
 var geocoder;
 var map;
 
-var addZomatoRatingtoLocs = function(model, locations){
-  cl('zomato');
+var addZomatoRatingtoLocs = function(){
+  var run = function(){
+    model.locs.forEach(function(loc){
+      addZomatoIds();
+    });
+    cl(model.locs);
+  };
+  window.setTimeout(run, 500);
+
+  var addZomatoIds = function(){
+    //model.locs[0]['foof'] = 'weeee';
+  };
+
 }
 
 var getLocs = function(){
@@ -21,7 +34,7 @@ var getLocs = function(){
   });
   function geocodes_complete_callback(){
     cl('all geocodes complete');
-    model.addZomatoRatingtoLocs(model, model.locs);
+    model.addZomatoRatingtoLocs();
   }
   var geocodes_completed = 0;
   requests.forEach(function(request){
