@@ -19,15 +19,6 @@ var addZomatoRatingtoLocs = function(locs){
     });
   });
 
-  // Vsample code
-  // var tribeca = {lat: 40.719526, lng: -74.0089934};
-  // var marker = new google.maps.Marker({
-  //   position: tribeca,
-  //   map: map,
-  //   title: 'First Marker!'
-  // });
-  // ^sample code
-
 
 }
 
@@ -38,7 +29,7 @@ var getLocs = function(){
     requests.push({address: name})
   });
   function geocodes_complete_callback(){
-    model.addZomatoRatingtoLocs(model.locs);
+    model.addYelpRatingtoLocs(model.locs);
   }
 
   model.locs = [];
@@ -72,7 +63,6 @@ var loadGoogle = function(){
 
 
 function initMap(styles) {
-  console.log('docwidth', window.innerWidth);
   var initial_zoom = 11;
   if (window.innerWidth < 330 ){
     initial_zoom = 10.5;

@@ -1,0 +1,1 @@
+var yelp_api_key = "INSERT YOUR YELP API KEY HERE";

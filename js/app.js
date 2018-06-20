@@ -9,7 +9,7 @@ var Model = function(){
   this.loadGoogle = loadGoogle;
   this.googleLoadedCallback = googleLoadedCallback;
   this.initMap = initMap;
-  this.addZomatoRatingtoLocs = addZomatoRatingtoLocs;
+  this.addYelpRatingtoLocs = addZomatoRatingtoLocs;
 
   this.init = function(){
     self.loadGoogle();
@@ -24,7 +24,6 @@ model = new Model();
 var AppViewModel = function(){
   this.init = function(){
     console.log('AppViewModel initializing');
-    console.log(self.model.locs);
   }
   this.model = model;
 
