@@ -2,7 +2,7 @@
 var cl = function(i){
   console.log(i);
 };
-// make a commit
+// zomato api key genuine
 cl(zomato_api_key);
 
 
