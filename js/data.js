@@ -3,6 +3,9 @@ var cl = function(i){
   console.log(i);
 };
 
+cl(yelp_api_key);
+cl(google_api_key);
+
 var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes, San Francisco'];
 
 var geocoder;
