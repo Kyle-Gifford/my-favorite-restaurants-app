@@ -8,6 +8,8 @@ var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Fra
 var geocoder;
 var map;
 
+// --
+
 var addZomatoRatingtoLocs = function(locs){
   locs.forEach(function(loc){
     var marker = new google.maps.Marker({
