@@ -1,7 +1,9 @@
+// yelp_token, google_api_key
 // TODO: remove cl and all logs
 var cl = function(i){
   console.log(i);
 };
+
 
 cl(yelp_api_key);
 cl(google_api_key);
@@ -13,6 +15,24 @@ var map;
 
 // --
 
+
+function addYelpRating(restaurant, yelp_api){
+  var token = 'Bearer ' + yelp_api;
+  $.ajax({
+      url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
+      headers: {'Authorization': token},
+      dataType: "json",
+      data: {
+          term: restaurant.name,
+          location: restaurant.address
+      },
+      success: function( response ) {
+          console.log( response.businesses[0].rating ); // server response
+          restaurant["yelp_rating"] = response.businesses[0].rating;
+      }
+  });
+};
+
 var addZomatoRatingtoLocs = function(locs){
   locs.forEach(function(loc){
     var marker = new google.maps.Marker({
@@ -21,8 +41,6 @@ var addZomatoRatingtoLocs = function(locs){
       title: loc.name
     });
   });
-
-
 }
 
 var getLocs = function(){
@@ -45,9 +63,12 @@ var getLocs = function(){
       placesService.textSearch({
           query: request.address
         }, function(iresults, status) {
+          cl(iresults);
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             current['name'] = iresults[0].name;
-            model.locs.push(current)
+            model.locs.push(current);
+            var restaurant = model.locs[model.locs.length - 1];
+            addYelpRating(restaurant, yelp_api_key);
             if (model.locs.length >= requests.length){ geocodes_complete_callback();};
           }
         });
