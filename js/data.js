@@ -5,7 +5,7 @@ var cl = function(i){
   console.log(i);
 };
 
-// -- helper functions
+// --- helper functions
 
 
 function addYelpRating(restaurant, yelp_api){
