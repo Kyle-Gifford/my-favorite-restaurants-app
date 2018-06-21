@@ -1,10 +1,10 @@
 var Model = function(){
-  this.init = function(){
+  this.init = function(api_key){
     var geocoder;
     var map;
     window.map = map;
     window.geocoder = geocoder;
-    self.loadGoogle();
+    self.loadGoogle(api_key);
   };
   this.locs = [];
   this.addYelpRating = addYelpRating;
@@ -17,10 +17,9 @@ var Model = function(){
   this.googleLoadedCallback = googleLoadedCallback;
   this.initMap = initMap;
   this.addYelpRatingstoLocs = addYelpRatingstoLocs;
-
-  this.init();
 };
 model = new Model();
+model.init(model.api_key);
 
 
 var AppViewModel = function(){

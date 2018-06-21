@@ -65,11 +65,11 @@ var getLocs = function(){
 
 
 
-var loadGoogle = function(){
+var loadGoogle = function(api_key){
   var tag = document.createElement('script');
   tag.async = true;
   tag.defer = true;
-  tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ model.api_key +'&v=3&callback=googleLoadedCallback';
+  tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ api_key +'&v=3&callback=googleLoadedCallback';
   var firstScriptTag = document.getElementsByTagName('script')[0];
   firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
 };
