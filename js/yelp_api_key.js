@@ -1,1 +1,1 @@
-var yelp_api_key = "INSERT YOUR YELP API KEY HERE";
+var yelp_api_key = "INSERT YELP API HERE";
