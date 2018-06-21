@@ -16,11 +16,17 @@ function addYelpRating(restaurant, yelp_api){
       dataType: "json",
       data: {
           term: restaurant.name,
-          location: restaurant.address
+          location: restaurant.formatted_address
       },
       success: function( response ) {
-          restaurant["yelp_rating"] = response.businesses[0].rating;
+        restaurant["yelp_rating"] = response.businesses[0].rating;
       }
+  });
+};
+
+var addYelpRatingstoLocs = function(model){
+  model.locs.forEach(function(loc){
+    addYelpRating(loc, model.yelp_api_key);
   });
 };
 
@@ -40,7 +46,7 @@ var getLocs = function(){
   requests.forEach(function(request){
     var current = {};
     geocoder.geocode( { 'address': request.address}, function(results, status) {
-      current["address"] = results[0].formatted_address;
+      current = results[0];
       current["position"] = {lat: results[0].geometry.location.lat(), lng: results[0].geometry.location.lng()}
       var placesService = new google.maps.places.PlacesService(map);
       placesService.textSearch({
@@ -57,11 +63,6 @@ var getLocs = function(){
   });
 };
 
-var addYelpRatingstoLocs = function(model){
-  model.locs.forEach(function(loc){
-    addYelpRating(loc, model.yelp_api_key);
-  });
-};
 
 
 var loadGoogle = function(){
@@ -96,7 +97,7 @@ function googleLoadedCallback(){
 
 // -- data
 
-var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes, San Francisco'];
+var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco'];
 
 var styles = [
   {
