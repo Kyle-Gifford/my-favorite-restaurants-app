@@ -1,1 +1,0 @@
-var yelp_api_key = "INSERT YELP API HERE";

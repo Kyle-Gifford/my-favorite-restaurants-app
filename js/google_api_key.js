@@ -1,1 +1,0 @@
-var google_api_key = "AIzaSyBLah8Cju0claUq_s6t_Q4OWyf3h10JeBI"
