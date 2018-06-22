@@ -4,7 +4,6 @@
 var cl = function(i){
   console.log(i);
 };
-
 // --- helper functions
 
 
@@ -19,15 +18,26 @@ function addYelpRating(restaurant, yelp_api){
           location: restaurant.formatted_address
       },
       success: function( response ) {
+        model.yelp_success_count ++;
         restaurant["yelp_rating"] = response.businesses[0].rating;
-      }
+        if (model.yelp_success_count == model.locs.length){
+          for (var i = model.locs.length - 1; i >= 0; i --){
+            var els = document.getElementsByClassName("gmnoprint");
+            els[i].setAttribute("data-bind", "click: handleMarkerClick")
+          }
+          ko.applyBindings(appview);
+        }
+        }
   });
 };
 
 var addYelpRatingstoLocs = function(model){
+  var i = model.locs.length - 1;
   model.locs.forEach(function(loc){
     addYelpRating(loc, model.yelp_api_key);
+    i++;
   });
+
 };
 
 
@@ -54,12 +64,26 @@ var getLocs = function(){
         }, function(iresults, status) {
           if (status === google.maps.places.PlacesServiceStatus.OK) {
             current['name'] = iresults[0].name;
+            var marker = model.getMarker(google, current["position"], current["name"]);
+            model.addMarker(marker, window.map, model.markers)
             model.locs.push(current);
             var restaurant = model.locs[model.locs.length - 1];
             if (model.locs.length >= requests.length){ getLocs_complete_callback(model);};
           }
         });
   });
+  });
+};
+
+var addMarker = function(marker, map, markers){
+  markers.push(marker);
+  markers[markers.length - 1].setMap(map);
+}
+
+var getMarker = function(google, position, title){
+  return new google.maps.Marker({
+    position: position,
+    title: title
   });
 };
 

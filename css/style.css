@@ -9,6 +9,10 @@ body {
 [title~="fullscreen"] {
     display: none;
 }
+/*data-bind="click: handleMenuClick"*/
+.gmnoprint {
+  data-bind: "click: handleMarkerClick";
+}
 
 .dropdown {
   position: absolute;
