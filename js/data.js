@@ -7,6 +7,20 @@ var cl = function(i){
 // --- helper functions
 
 
+var filterMarkers = function(appview, bigger) {
+  var filter = appview.textInFilter();
+  console.log(filter);
+  appview.markers.forEach(function(marker){
+    console.log(marker.title);
+    console.log(marker.title.search(filter));
+    if (marker.title.search(filter) > -1 && (filter.length > 0)) {
+      marker.setVisible(false);
+    } else {
+      marker.setVisible(true);
+    }
+  });
+}
+
 function addYelpRating(restaurant, yelp_api){
   var token = 'Bearer ' + yelp_api;
   $.ajax({
@@ -20,6 +34,7 @@ function addYelpRating(restaurant, yelp_api){
       success: function( response ) {
         model.yelp_success_count ++;
         restaurant["yelp_rating"] = response.businesses[0].rating;
+        appview.visibleMarkers.push(restaurant);
         if (model.yelp_success_count == model.locs.length){
           for (var i = model.locs.length - 1; i >= 0; i --){
             var els = document.getElementsByClassName("gmnoprint");
@@ -121,7 +136,9 @@ function googleLoadedCallback(){
 
 // -- data
 
-var fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco'];
+var fav_strings = ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco'];
+
+// 'Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco', 'Las Pencas, South San Francisco',
 
 var styles = [
   {

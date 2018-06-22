@@ -9,6 +9,7 @@ var Model = function(){
   };
   this.locs = [];
   this.markers = [];
+  this.filterMarkers = filterMarkers;
   this.getMarker = getMarker;
   this.addMarker = addMarker;
   this.addYelpRating = addYelpRating;
@@ -32,13 +33,22 @@ var AppViewModel = function(){
     console.log('AppViewModel initializing');
   }
   this.model = model;
+  this.textInFilter = ko.observable();
   this.markers = model.markers;
+  this.keyHistory = [];
+  this.filterMarkers = model.filterMarkers;
+  this.visibleMarkers = ko.observableArray(self.markers);
+  this.keyPressed = function(data, event){
+    self.filterMarkers(window.appview);
+    return true;
+  }
   this.handleMarkerClick = function(data, event){
-    console.log(event.target.title);
-    console.log(event.target);
+    var name = event.target.title || event.target.textContent;
+    cl(name);
   };
   this.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0);
   this.handleMenuClick = function(self){
+    console.log('clicked menu');
     self.dropdownVisible() ? self.dropdownVisible(0) : self.dropdownVisible(1);
   };
 

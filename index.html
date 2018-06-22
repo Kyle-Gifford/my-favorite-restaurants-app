@@ -10,14 +10,31 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body>
-    <div class="dropdown" data-bind="click: handleMenuClick">
-      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+<body data-bind="event: {keyup: keyPressed}">
+<!-- <body> -->
+    <div class="dropdown">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bind="click: handleMenuClick">
         Menu
       </button>
       <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" data-bind="style: { display: dropdownVisible() > 0 ? 'inherit' : 'none' }">
+
+      <form class="dropdown-item">
+          <div class="form-group">
+            <label for="filter">Filter:</label>
+                <input type="text" class="form-control" id="filtertext" placeholder="Filter Locations" data-bind="textInput: textInFilter">
+                <small id="filterHelp" class="form-text text-muted">Enter text to filter matching locations.</small>
+          </div>
+        </form>
+
         <a class="dropdown-item" href="#">Kyle's Favorite Restaurants</a>
-        <!-- <a class="dropdown-item" href="#">Additional dropdown item</a> -->
+        <span data-bind="foreach: visibleMarkers">
+            <a class="dropdown-item" href="#">
+                <span data-bind="click: $parent.handleMarkerClick">
+                    <span data-bind="text: name">
+                    </span>
+                </span>
+            </a>
+        </span>
       </div>
     </div>
 
