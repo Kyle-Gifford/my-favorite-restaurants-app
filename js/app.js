@@ -17,6 +17,7 @@ var Model = function(){
   this.yelp_api_key = config.yelp_api_key;
   this.yelp_success_count = 0
   this.fav_strings = fav_strings;
+  this.restaurants = [];
   this.styles = styles;
   this.getLocs = getLocs;
   this.loadGoogle = loadGoogle;
@@ -36,8 +37,9 @@ var AppViewModel = function(){
   this.textInFilter = ko.observable();
   this.markers = model.markers;
   this.keyHistory = [];
+  this.restaurants = ko.observable(model.restaurants);
   this.filterMarkers = model.filterMarkers;
-  this.visibleMarkers = ko.observableArray(self.markers);
+  this.visibleMarkers = ko.observable({});
   this.keyPressed = function(data, event){
     self.filterMarkers(window.appview);
     return true;

@@ -4,21 +4,24 @@
 var cl = function(i){
   console.log(i);
 };
+cl('data');
 // --- helper functions
 
 
-var filterMarkers = function(appview, bigger) {
+var filterMarkers = function(appview) {
   var filter = appview.textInFilter();
   console.log(filter);
-  appview.markers.forEach(function(marker){
-    console.log(marker.title);
-    console.log(marker.title.search(filter));
-    if (marker.title.search(filter) > -1 && (filter.length > 0)) {
-      marker.setVisible(false);
+
+  for (var i = 0; i < appview.markers.length; i++){
+    var name = appview.markers[i].title;
+    if (appview.markers[i].title.search(filter) > -1 && (filter.length > 0)) {
+      appview.markers[i].setVisible(false);
+      appview.visibleMarkers()[i].visible(false);
     } else {
-      marker.setVisible(true);
+      appview.markers[i].setVisible(true);
+      appview.visibleMarkers()[i].visible(true);
     }
-  });
+  }
 }
 
 function addYelpRating(restaurant, yelp_api){
@@ -34,12 +37,23 @@ function addYelpRating(restaurant, yelp_api){
       success: function( response ) {
         model.yelp_success_count ++;
         restaurant["yelp_rating"] = response.businesses[0].rating;
-        appview.visibleMarkers.push(restaurant);
-        if (model.yelp_success_count == model.locs.length){
-          for (var i = model.locs.length - 1; i >= 0; i --){
-            var els = document.getElementsByClassName("gmnoprint");
-            els[i].setAttribute("data-bind", "click: handleMarkerClick")
+        restaurant["visibility"] = 'inherit';
+        restaurant["visible"] = ko.observable(true);
+        //attempt
+        appview.visibleMarkers()[restaurant.name] = restaurant;
+
+        //old
+        // appview.visibleMarkers.unshift(restaurant);
+
+        els = document.getElementsByTagName("area");
+        if (els.length > 0){
+          cl(els.length);
+          for (var i = 0; i < els.length; i++){
+            cl(i);
+            els[i].setAttribute("data-bind", "click: handleMarkerClick");
           }
+        }
+        if (model.yelp_success_count == model.locs.length){
           ko.applyBindings(appview);
         }
         }
@@ -81,7 +95,12 @@ var getLocs = function(){
             current['name'] = iresults[0].name;
             var marker = model.getMarker(google, current["position"], current["name"]);
             model.addMarker(marker, window.map, model.markers)
-            model.locs.push(current);
+            model.locs.unshift(current);
+            if (appview.restaurants) {
+              appview.restaurants().unshift(current["name"]);
+            } else {
+              model.restaurants.unshift(current["name"]);
+            }
             var restaurant = model.locs[model.locs.length - 1];
             if (model.locs.length >= requests.length){ getLocs_complete_callback(model);};
           }
@@ -91,8 +110,8 @@ var getLocs = function(){
 };
 
 var addMarker = function(marker, map, markers){
-  markers.push(marker);
-  markers[markers.length - 1].setMap(map);
+  markers.unshift(marker);
+  markers[0].setMap(map);
 }
 
 var getMarker = function(google, position, title){
@@ -136,7 +155,7 @@ function googleLoadedCallback(){
 
 // -- data
 
-var fav_strings = ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco'];
+var fav_strings = ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco', 'Las Pencas, South San Francisco'];
 
 // 'Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco', 'Las Pencas, South San Francisco',
 

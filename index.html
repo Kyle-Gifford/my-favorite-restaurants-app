@@ -10,9 +10,9 @@
     <link rel="stylesheet" href="https://use.fontawesome.com/releases/v5.0.13/css/all.css" integrity="sha384-DNOHZ68U8hZfKXOrtjWvjxusGo9WQnrNx2sqG0tfsghAvtVlRW3tvkXWZh58N9jp" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
 </head>
-<body data-bind="event: {keyup: keyPressed}">
+<body>
 <!-- <body> -->
-    <div class="dropdown">
+    <div class="dropdown" data-bind="event: {keyup: keyPressed}">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bind="click: handleMenuClick">
         Menu
       </button>
@@ -27,10 +27,10 @@
         </form>
 
         <a class="dropdown-item" href="#">Kyle's Favorite Restaurants</a>
-        <span data-bind="foreach: visibleMarkers">
-            <a class="dropdown-item" href="#">
+        <span data-bind="foreach: restaurants">
+            <a class="dropdown-item" href="#" data-bind="visible: $parent.visibleMarkers[$data].visible">
                 <span data-bind="click: $parent.handleMarkerClick">
-                    <span data-bind="text: name">
+                    <span data-bind="text: $data">
                     </span>
                 </span>
             </a>
