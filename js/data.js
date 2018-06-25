@@ -1,3 +1,6 @@
+var app = window.app || {};
+
+// oldV
 // yelp_token, google_api_key
 // TODO: remove cl and all logs
 
