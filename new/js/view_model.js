@@ -10,31 +10,30 @@ var AppViewModel = function(){
   this.geocodesLoaded = false;
 
   this.handleMarkerClick = function(){
-    // console.log(self);
-    console.log(this);
+    var coords = this.coords;
+
   }
 
   this.googleLoaded = function(){
     app.f.initMap(app.i.styles);
-    // todo get markers (then try with initmap commented out if not working then need to see if can access initmap callback);
-    app.f.getGeocodes(); // works without map
+    app.f.getGeocodes();
   };
 
   this.mapLoaded = function() {
 
   }
 
-  this.getYelp = function(){
-
+  this.getYelp = function(obj){
+    console.log('avmyelp');
+    console.log(obj);
+    app.f.addYelpRating(obj);
   }
 
   this.initialize = function(self){
-    console.log('AVMinitializing')
-    app.f.loadGoogle(app.model.keys.google_key);
+        app.f.loadGoogle(app.model.keys.google_key);
   };
   this.init_callback = function(self){
-    console.log('AVMinit complete')
-  };
+      };
   var init = function(self){
     self.initialize(self);
     self.init_callback(self);
@@ -59,7 +58,3 @@ app.initialization_sequence = function(){
 
 
 (app.initialization_sequence || Function)();
-
-
-
-

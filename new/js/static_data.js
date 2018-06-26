@@ -4,40 +4,60 @@ var app = window.app || app || {};
 
 var Functions = function(){
 
+  this.addYelpRating = function(restaurant){
+    console.log('restaurant');
+    console.log(restaurant);
+    var token = 'Bearer ' + app.model.keys.yelp_token;
+    $.ajax({
+        url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
+        headers: {'Authorization': token},
+        dataType: "json",
+        data: {
+            location: restaurant.geocode.formatted_address,
+            latitude: restaurant.position.lat,
+            longitude: restaurant.position.lng,
+            radius: 100,
+            sort_by: "distance"
+        },
+        success: function( response ) {
+          console.log(response);
+          app.model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
+          }
+    });
+  };
+
   this.addMarkersToObj = function(){
     app.placesService = new google.maps.places.PlacesService(app.model.map);
     var obj = app.model.markers_obj;
-    for (var id in obj){
-      obj[id]["marker"] = app.f.getMarkerFromId(id);
+        for (var pos in obj){
+      var markerObj = {};
+      obj[pos]["marker"] = app.f.getMarkerFromPos(pos);
+      app.model.markers_arr.push(markerObj);
     }
     return app.f.markersAdded(obj);
   }
   this.markersAdded = function(obj){
-    console.log('markers added');
-    return obj;
+        return obj;
   }
 
-  this.getMarkerFromId = function(id){
-    console.log('attempting get marker id: ' + id);
-    place = app.model.markers_obj[id];
-    var lat = place.geodata.geometry.location.lat();
-    var long = place.geodata.geometry.location.lng();
-    var position = {lat: lat, lng: long};
-    place['position'] = position;
+  this.getMarkerFromPos = function(pos){
+        var place = app.model.markers_obj[pos];
+    var position = place.position;
+    var lat = place.position.lat;
+    var lng = place.position.lng;
+
     var marker = new google.maps.Marker({
-      position: position,
+      position: {lat: lat, lng: lng},
       map: app.model.map,
-      title: place.formatted_address,
+      title: place.geocode.formatted_address,
     });
     marker.addListener('click', app.viewmodel.handleMarkerClick);
-    console.log(marker);
-    marker["id"] = id;
-    return marker;
+    marker["coords"] = pos;
+        return marker;
   }
 
   this.gotGeocodes = function(){
-    console.log('all geocodes calculated');
-    if (app.model.map.data){
+        if (app.model.map.data){
       app.viewmodel.getMarkers();
     }
 
@@ -52,28 +72,37 @@ var Functions = function(){
   };
 
   this.ggccb = function(spot, current){
-    console.log('attempted geocode', spot, 'output:', current);
+        app.viewmodel.getYelp(current);
     return current;
   }
   this.getGeocode = function(spot){
-    console.log('spot in: ' + spot)
+        var out;
     app.geocoder.geocode({'address': spot}, function(results, status){
       var current = results[0];
       app.requests_made += 1;
       if (current.place_id){
-        console.log(current.place_id);
+        out = current;
+        var lat = current.geometry.location.lat();
+        var lng = current.geometry.location.lng();
+        var position = {lat: lat, lng: lng};
+        var posString = JSON.stringify(position);
         app.model.places_arr.push(current.place_id);
-        app.model.markers_obj[current.place_id] = {};
-        app.model.markers_obj[current.place_id]["geodata"] = current;
+        app.model.markers_obj[posString] = {};
+        app.model.markers_obj[posString]['geocode'] = current;
+        app.model.markers_obj[posString]['position'] = position;
+        app.model.markers_obj[posString]['posString'] = posString;
+        app.f.ggccb(spot, app.model.markers_obj[posString]);
+
       } else {
         console.error('unable to find' + spot);
       }
       if (app.requests_made == app.requests_to_make) {
+        app.viewmodel.geoCodesLoaded = true;
         app.f.gotGeocodes();
-
       }
-      app.f.ggccb(spot, current);
+
     });
+    return out;
   }
 
   this.initMap = function(styles, callback) {
