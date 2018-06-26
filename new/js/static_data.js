@@ -4,6 +4,27 @@ var app = window.app || app || {};
 
 var Functions = function(){
 
+  this.refreshMarker = function(markerObj){
+
+    if (markerObj.yelp.name)
+    markerObj.marker.title = markerObj.yelp.name || markerObj.marker.title;
+    return markerObj;
+  }
+
+
+  this.refreshMarkers = function(){
+
+    for (var marker in app.model.markers_obj){
+      this.refreshMarker(app.model.markers_obj[marker]);
+    }
+    this.rmcb();
+    return app.model.markers_obj;
+  }
+  this.rmcb = function(){
+    console.log('refreshMarkers completed');
+  }
+
+
   this.addYelpRating = function(restaurant){
     var token = 'Bearer ' + app.model.keys.yelp_token;
     $.ajax({
@@ -18,8 +39,7 @@ var Functions = function(){
             sort_by: "distance"
         },
         success: function( response ) {
-          console.log('got yelp', response);
-          if (response["businesses"]) {
+                    if (response["businesses"]) {
             app.model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
             app.viewmodel.menuItems.push(app.model.markers_obj[restaurant.posString]);
           } else {
@@ -40,7 +60,8 @@ var Functions = function(){
     return app.f.markersAdded(obj);
   }
   this.markersAdded = function(obj){
-        return obj;
+    this.refreshMarkers();
+    return obj;
   }
 
   this.getMarkerFromPos = function(pos){
@@ -62,7 +83,7 @@ var Functions = function(){
   }
 
   this.gotGeocodes = function(){
-        if (app.model.map.data){
+    if (app.model.map.data){
       app.viewmodel.getMarkers();
     }
 
@@ -86,6 +107,9 @@ var Functions = function(){
       var current = results[0];
       app.requests_made += 1;
       if (current.place_id){
+        //get yelp
+        console.log('1');
+        console.log('')
         out = current;
         var lat = current.geometry.location.lat();
         var lng = current.geometry.location.lng();

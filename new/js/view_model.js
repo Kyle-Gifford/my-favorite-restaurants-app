@@ -26,16 +26,16 @@ var AppViewModel = function(){
   }
 
   this.getYelp = function(obj){
-    console.log('avmyelp');
-    console.log(obj);
     app.f.addYelpRating(obj);
+    // app.f.refreshMarkers(obj);
   }
 
   this.initialize = function(self){
-        app.f.loadGoogle(app.model.keys.google_key);
+    app.f.loadGoogle(app.model.keys.google_key);
   };
   this.init_callback = function(self){
-      };
+
+  };
   var init = function(self){
     self.initialize(self);
     self.init_callback(self);
