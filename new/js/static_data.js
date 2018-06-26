@@ -5,8 +5,6 @@ var app = window.app || app || {};
 var Functions = function(){
 
   this.addYelpRating = function(restaurant){
-    console.log('restaurant');
-    console.log(restaurant);
     var token = 'Bearer ' + app.model.keys.yelp_token;
     $.ajax({
         url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
@@ -16,12 +14,18 @@ var Functions = function(){
             location: restaurant.geocode.formatted_address,
             latitude: restaurant.position.lat,
             longitude: restaurant.position.lng,
-            radius: 100,
+            radius: 30,
             sort_by: "distance"
         },
         success: function( response ) {
-          console.log(response);
-          app.model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
+          console.log('got yelp', response);
+          if (response["businesses"]) {
+            app.model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
+            app.viewmodel.menuItems.push(app.model.markers_obj[restaurant.posString]);
+          } else {
+            console.error(('yelp unable to find ' + restaurant.geocode.formatted_address))
+          }
+
           }
     });
   };
@@ -32,7 +36,6 @@ var Functions = function(){
         for (var pos in obj){
       var markerObj = {};
       obj[pos]["marker"] = app.f.getMarkerFromPos(pos);
-      app.model.markers_arr.push(markerObj);
     }
     return app.f.markersAdded(obj);
   }
@@ -41,7 +44,7 @@ var Functions = function(){
   }
 
   this.getMarkerFromPos = function(pos){
-        var place = app.model.markers_obj[pos];
+    var place = app.model.markers_obj[pos];
     var position = place.position;
     var lat = place.position.lat;
     var lng = place.position.lng;
@@ -52,6 +55,8 @@ var Functions = function(){
       title: place.geocode.formatted_address,
     });
     marker.addListener('click', app.viewmodel.handleMarkerClick);
+    marker["gAddress"] = marker.title;
+    marker.title = place.userTitle;
     marker["coords"] = pos;
         return marker;
   }
@@ -90,6 +95,7 @@ var Functions = function(){
         app.model.markers_obj[posString] = {};
         app.model.markers_obj[posString]['geocode'] = current;
         app.model.markers_obj[posString]['position'] = position;
+        app.model.markers_obj[posString]['userTitle'] = spot;
         app.model.markers_obj[posString]['posString'] = posString;
         app.f.ggccb(spot, app.model.markers_obj[posString]);
 
@@ -204,5 +210,10 @@ var Info = function(){
   ];
 };
 
-app.i = new Info();
-app.f = new Functions();
+app.initialize_static_data = function() {
+  app.i = new Info();
+  app.f = new Functions();
+};
+
+
+(app.initialization_sequence || Function)();

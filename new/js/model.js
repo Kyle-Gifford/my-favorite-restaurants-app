@@ -5,7 +5,6 @@ var AppModel = function(){
   // this.markers = ko.observableArray();
   this.map = null;
   this.markers_obj = {};
-  this.markers_arr = ko.observableArray([]);
   this.places_arr = [];
   this.keys = {};
   this.keys.google_key = app.config.google_key || "PASTE YOUR GOOGLE API KEY HERE";

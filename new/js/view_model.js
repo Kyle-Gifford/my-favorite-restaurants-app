@@ -10,9 +10,11 @@ var AppViewModel = function(){
   this.geocodesLoaded = false;
 
   this.handleMarkerClick = function(){
+    console.log(this);
     var coords = this.coords;
-
   }
+
+  this.menuItems = ko.observableArray();
 
   this.googleLoaded = function(){
     app.f.initMap(app.i.styles);
@@ -48,12 +50,13 @@ app.initialize_view_model = function(){
 
 //for last js file to load:
 app.initialization_sequence = function(){
-  if (!app.initialize_model) {
+  if (!app.initialize_static_data || !app.initialize_model || !app.initialize_view_model) {
     return false;
-  } else if (!app.model) {
+  } else {
+    app.initialize_static_data();
     app.initialize_model();
+    app.initialize_view_model();
   }
-  app.initialize_view_model();
 };
 
 
