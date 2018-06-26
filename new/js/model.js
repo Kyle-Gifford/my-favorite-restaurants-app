@@ -3,8 +3,10 @@ window.app = app;
 
 var AppModel = function(){
   // this.markers = ko.observableArray();
+  this.map = null;
   this.markers_obj = {};
   this.markers_arr = [];
+  this.places_arr = [];
   this.keys = {};
   this.keys.google_key = app.config.google_key || "PASTE YOUR GOOGLE API KEY HERE";
   this.keys.yelp_token =  app.config.yelp_token || "PASTE YOUR YELP ACCESS TOKEN HERE";

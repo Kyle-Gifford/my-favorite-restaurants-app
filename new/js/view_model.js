@@ -1,20 +1,33 @@
 var app = window.app || app || {};
-window.app = app;
+if (!window.app) { window.app = app };
 
 var AppViewModel = function(){
 
   this.getMarkers = function(){
+    app.f.addMarkersToObj();
+  }
 
+  this.geocodesLoaded = false;
+
+  this.handleMarkerClick = function(){
+    // console.log(self);
+    console.log(this);
   }
 
   this.googleLoaded = function(){
-    // app.f.initMap(app.i.styles);
+    app.f.initMap(app.i.styles);
     // todo get markers (then try with initmap commented out if not working then need to see if can access initmap callback);
     app.f.getGeocodes(); // works without map
   };
+
   this.mapLoaded = function() {
 
   }
+
+  this.getYelp = function(){
+
+  }
+
   this.initialize = function(self){
     console.log('AVMinitializing')
     app.f.loadGoogle(app.model.keys.google_key);

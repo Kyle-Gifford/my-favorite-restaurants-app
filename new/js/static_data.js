@@ -4,29 +4,43 @@ var app = window.app || app || {};
 
 var Functions = function(){
 
-  this.initMap = function(styles, callback) {
-    var initial_zoom = 11;
-    if (window.innerWidth < 330 ){
-      initial_zoom = 10.5;
+  this.addMarkersToObj = function(){
+    app.placesService = new google.maps.places.PlacesService(app.model.map);
+    var obj = app.model.markers_obj;
+    for (var id in obj){
+      obj[id]["marker"] = app.f.getMarkerFromId(id);
     }
-    map = new google.maps.Map(document.getElementById('map'), {
-      center: {lat: 37.685839, lng: -122.366792},
-      zoom: initial_zoom,
-      styles: styles,
-      mapTypeControl: false,
+    return app.f.markersAdded(obj);
+  }
+  this.markersAdded = function(obj){
+    console.log('markers added');
+    return obj;
+  }
+
+  this.getMarkerFromId = function(id){
+    console.log('attempting get marker id: ' + id);
+    place = app.model.markers_obj[id];
+    var lat = place.geodata.geometry.location.lat();
+    var long = place.geodata.geometry.location.lng();
+    var position = {lat: lat, lng: long};
+    place['position'] = position;
+    var marker = new google.maps.Marker({
+      position: position,
+      map: app.model.map,
+      title: place.formatted_address,
     });
-  };
-  this.loadGoogle = function(key){
-      var tag = document.createElement('script');
-      tag.async = true;
-      tag.defer = true;
-      tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ key +'&v=3&callback=app.viewmodel.googleLoaded';
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    };
+    marker.addListener('click', app.viewmodel.handleMarkerClick);
+    console.log(marker);
+    marker["id"] = id;
+    return marker;
+  }
+
   this.gotGeocodes = function(){
     console.log('all geocodes calculated');
-    app.viewmodel.getMarkers();
+    if (app.model.map.data){
+      app.viewmodel.getMarkers();
+    }
+
   };
   this.getGeocodes = function(){
     app.geocoder = new google.maps.Geocoder();
@@ -48,17 +62,44 @@ var Functions = function(){
       app.requests_made += 1;
       if (current.place_id){
         console.log(current.place_id);
-        app.model.markers_obj[current.place_id] = {}
+        app.model.places_arr.push(current.place_id);
+        app.model.markers_obj[current.place_id] = {};
         app.model.markers_obj[current.place_id]["geodata"] = current;
       } else {
         console.error('unable to find' + spot);
       }
       if (app.requests_made == app.requests_to_make) {
         app.f.gotGeocodes();
+
       }
       app.f.ggccb(spot, current);
     });
   }
+
+  this.initMap = function(styles, callback) {
+    var initial_zoom = 11;
+    if (window.innerWidth < 330 ){
+      initial_zoom = 10.5;
+    }
+    app.model.map = new google.maps.Map(document.getElementById('map'), {
+      center: {lat: 37.685839, lng: -122.366792},
+      zoom: initial_zoom,
+      styles: styles,
+      mapTypeControl: false,
+    });
+    if (app.model.geocodesLoaded){
+     app.viewmodel.getMarkers();
+    }
+  };
+  this.loadGoogle = function(key){
+      var tag = document.createElement('script');
+      tag.async = true;
+      tag.defer = true;
+      tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ key +'&v=3&callback=app.viewmodel.googleLoaded';
+      var firstScriptTag = document.getElementsByTagName('script')[0];
+      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
+    };
+
 
 }
 
