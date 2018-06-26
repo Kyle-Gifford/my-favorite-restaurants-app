@@ -2,10 +2,15 @@ var app = window.app || app || {};
 window.app = app;
 
 var AppViewModel = function(){
+
+  this.getMarkers = function(){
+
+  }
+
   this.googleLoaded = function(){
-    app.f.initMap(app.i.styles);
+    // app.f.initMap(app.i.styles);
     // todo get markers (then try with initmap commented out if not working then need to see if can access initmap callback);
-    app.f.getMarkers();
+    app.f.getGeocodes(); // works without map
   };
   this.mapLoaded = function() {
 

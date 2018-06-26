@@ -24,11 +24,40 @@ var Functions = function(){
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
-  this.getMarkers = function(){
-
+  this.gotGeocodes = function(){
+    console.log('all geocodes calculated');
+    app.viewmodel.getMarkers();
   };
-  this.gmcb = function(){
+  this.getGeocodes = function(){
+    app.geocoder = new google.maps.Geocoder();
+    app.requests_to_make = app.i.fav_strings.length;
+    app.requests_made = 0
+    app.i.fav_strings.forEach(function(spot){
+      app.f.getGeocode(spot);
+    });
+  };
 
+  this.ggccb = function(spot, current){
+    console.log('attempted geocode', spot, 'output:', current);
+    return current;
+  }
+  this.getGeocode = function(spot){
+    console.log('spot in: ' + spot)
+    app.geocoder.geocode({'address': spot}, function(results, status){
+      var current = results[0];
+      app.requests_made += 1;
+      if (current.place_id){
+        console.log(current.place_id);
+        app.model.markers_obj[current.place_id] = {}
+        app.model.markers_obj[current.place_id]["geodata"] = current;
+      } else {
+        console.error('unable to find' + spot);
+      }
+      if (app.requests_made == app.requests_to_make) {
+        app.f.gotGeocodes();
+      }
+      app.f.ggccb(spot, current);
+    });
   }
 
 }
