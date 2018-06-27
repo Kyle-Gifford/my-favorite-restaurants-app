@@ -4,20 +4,54 @@
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
     <title>Kyle's Favorite Restaurants</title>
-<!--     <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous"> -->
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.1/css/bootstrap.min.css" integrity="sha384-WskhaSGFgHYWDcbwN70/dfYBj47jz9qbsMId/iRN3ewGhXQFZCSftd1LZCfmhktB" crossorigin="anonymous">
     <link rel="stylesheet" href="css/style.css">
+    <script type='text/javascript' src='http://ajax.aspnetcdn.com/ajax/knockout/knockout-3.4.2.js'></script>
 </head>
 <body>
 
+    <!-- <div id="koContainer">
+        <ul data-bind="foreach: markers_arr">
+            <li data-bind="text: koTitle"></li>
+        </ul>
+    </div> -->
+
+    <div class="dropdown" data-bind="event: {keyup: keyPressed}">
+      <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bind="click: handleMenuClick">
+        Menu
+      </button>
+      <div class="dropdown-menu" aria-labelledby="dropdownMenuButton" data-bind="style: { display: dropdownVisible() > 0 ? 'inherit' : 'none' }">
+
+            <form class="dropdown-item">
+              <div class="form-group">
+                <label for="filter">Filter:</label>
+                    <input type="text" class="form-control" id="filtertext" placeholder="Filter Locations" data-bind="textInput: textInFilter">
+                    <small id="filterHelp" class="form-text text-muted">Enter text to filter matching locations.</small>
+              </div>
+            </form>
+
+            <a class="dropdown-item" href="#"><strong>Kyle's Favorite Restaurants</strong></a>
+            <span data-bind="foreach: markers_arr">
+                <!-- <a class="dropdown-item" href="#" data-bind="visible: $data.visible"> -->
+                <a class="dropdown-item" href="#" data-bind="visible: $data.koVisible">
+                    <span data-bind="click: $parent.handleMenuItemClick">
+                        <span data-bind="text: $data.koTitle">
+                        </span>
+                    </span>
+                </a>
+            </span>
+      </div>
+    </div>
 
 
-<div id="map"></div>
-<!--     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js'></script> -->
+
+    <div id="map"></div>
     <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js'></script>
     <script sync type='text/javascript' src='js/config.js'></script>
     <script sync type='text/javascript' src='js/static_data.js'></script>
     <script sync type='text/javascript' src='js/model.js'></script>
     <script sync type='text/javascript' src='js/view_model.js'></script>
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
+
 </body>
 </html>

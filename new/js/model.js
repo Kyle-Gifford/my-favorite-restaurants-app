@@ -1,15 +1,11 @@
-var app = window.app || app || {};
-window.app = app;
-
 var AppModel = function(){
   // this.markers = ko.observableArray();
   this.map = null;
   this.markers_obj = {};
-  this.places_arr = ko.observableArray();
-  this.markers_arr = ko.observableArray();
+  this.places_arr = [];
   this.keys = {};
-  this.keys.google_key = app.config.google_key || "PASTE YOUR GOOGLE API KEY HERE";
-  this.keys.yelp_token =  app.config.yelp_token || "PASTE YOUR YELP ACCESS TOKEN HERE";
+  this.keys.google_key = config.google_key || "PASTE YOUR GOOGLE API KEY HERE";
+  this.keys.yelp_token =  config.yelp_token || "PASTE YOUR YELP ACCESS TOKEN HERE";
   this.initialize = function(self){
         // window.gcb = app.functions.gcb;
   }
@@ -24,8 +20,8 @@ var AppModel = function(){
 
 };
 
-app.initialize_model = function(){
-  app.model = new AppModel();
+var initialize_model = function(){
+  window.model = new AppModel();
 };
 
-(app.initialization_sequence || Function)();
+(window.initialization_sequence || Function)();

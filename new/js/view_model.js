@@ -1,38 +1,59 @@
-var app = window.app || app || {};
-if (!window.app) { window.app = app };
 
 var AppViewModel = function(){
 
+  this.keyPressed = function(){
+    console.info('this', this);
+    //todo
+  };
+
+  this.textInFilter = ko.observable("");
+
   this.getMarkers = function(){
-    app.f.addMarkersToObj();
-  }
+    f.addMarkersToObj();
+  };
+
+  this.menuToggle = function(){
+    //todo
+  };
+
+  this.handleMenuClick = function(){
+    viewmodel.dropdownVisible(!viewmodel.dropdownVisible());
+  };
 
   this.geocodesLoaded = false;
 
+  this.markers_arr = ko.observableArray();
+
+  this.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0);
+
   this.handleMarkerClick = function(){
+    console.info('this', this);
+    console.info('coords', this.coords);
     var coords = this.coords;
   }
 
-  this.menuItems = ko.observableArray(app.model.markers_arr());
+  this.handleMenuItemClick = function(){
+    console.info('here', this);
+  };
 
   this.googleLoaded = function(){
-    app.f.initMap(app.i.styles);
-    app.f.getGeocodes();
+    f.initMap(window.i.styles);
+    f.getGeocodes();
   };
 
   this.mapLoaded = function() {
   }
 
   this.gotYelp = function(restaurant) {
-    app.f.refreshMarker(restaurant);
+    f.refreshMarker(restaurant);
   }
 
   this.getYelp = function(obj){
-    app.f.addYelpInfo(obj);
+    f.addYelpInfo(obj);
   }
 
   this.initialize = function(self){
-    app.f.loadGoogle(app.model.keys.google_key);
+    f.loadGoogle(model.keys.google_key);
   };
   this.init_callback = function(self){
 
@@ -44,21 +65,18 @@ var AppViewModel = function(){
   init(this);
 };
 
-app.initialize_view_model = function(){
-  app.viewmodel = new AppViewModel();
-};
-
 
 //for last js file to load:
-app.initialization_sequence = function(){
-  if (!app.initialize_static_data || !app.initialize_model || !app.initialize_view_model) {
+var initialization_sequence = function(){
+  if (!initialize_static_data || !initialize_model) {
     return false;
   } else {
-    app.initialize_static_data();
-    app.initialize_model();
-    app.initialize_view_model();
+    window.initialize_static_data();
+    window.initialize_model();
+    window.viewmodel = new AppViewModel();
+    ko.applyBindings(window.viewmodel);
   }
 };
 
 
-(app.initialization_sequence || Function)();
+(initialization_sequence || Function)();

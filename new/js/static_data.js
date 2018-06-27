@@ -1,14 +1,16 @@
-var app = window.app || app || {};
-
-
 
 var Functions = function(){
 
   this.refreshMarker = function(markerObj){
     if (markerObj["yelp"] && markerObj.yelp["name"]) {
-      markerObj.marker.setTitle(markerObj.yelp.name)
+      markerObj.marker.setTitle(markerObj.yelp.name);
+      markerObj.marker.koTitle(markerObj.yelp.name);
       markerObj.marker["yelp_data"] = markerObj["yelp"];
+
       markerObj.marker.setVisible(true);
+      markerObj.marker.koVisible(true);
+
+
     }
     return markerObj;
   }
@@ -16,11 +18,11 @@ var Functions = function(){
 
   this.refreshMarkers = function(){
 
-    for (var marker in app.model.markers_obj){
-      this.refreshMarker(app.model.markers_obj[marker]);
+    for (var marker in model.markers_obj){
+      this.refreshMarker(model.markers_obj[marker]);
     }
     this.rmcb();
-    return app.model.markers_obj;
+    return model.markers_obj;
   }
   this.rmcb = function(){
 
@@ -28,11 +30,7 @@ var Functions = function(){
 
 
   this.addYelpInfo = function(restaurant){
-
-
-
-
-    var token = 'Bearer ' + app.model.keys.yelp_token;
+    var token = 'Bearer ' + model.keys.yelp_token;
     $.ajax({
         url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
         headers: {'Authorization': token},
@@ -46,12 +44,9 @@ var Functions = function(){
             limit: 1
         },
         success: function( response ) {
-          console.log('VrV : ');
-          console.log(response);
           if (response["businesses"]) {
-            app.model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
-            app.viewmodel.menuItems.push(app.model.markers_obj[restaurant.posString]);
-            app.viewmodel.gotYelp(app.model.markers_obj[restaurant.posString])
+            model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
+            viewmodel.gotYelp(model.markers_obj[restaurant.posString])
           } else {
             console.error(('yelp unable to find ' + restaurant.geocode.formatted_address))
           }
@@ -61,14 +56,14 @@ var Functions = function(){
   };
 
   this.addMarkersToObj = function(){
-    app.placesService = new google.maps.places.PlacesService(app.model.map);
-    var obj = app.model.markers_obj;
-        for (var pos in obj){
+    var placesService = new google.maps.places.PlacesService(model.map);
+    var obj = model.markers_obj;
+    for (var pos in obj){
       var markerObj = {};
-      obj[pos]["marker"] = app.f.getMarkerFromPos(pos);
-      app.model.markers_arr.push(obj[pos]["marker"]);
+      obj[pos]["marker"] = f.getMarkerFromPos(pos);
+      viewmodel.markers_arr.push(obj[pos]["marker"]);
     }
-    return app.f.markersAdded(obj);
+    return f.markersAdded(obj);
   }
   this.markersAdded = function(obj){
     this.refreshMarkers();
@@ -76,7 +71,7 @@ var Functions = function(){
   }
 
   this.getMarkerFromPos = function(pos){
-    var place = app.model.markers_obj[pos];
+    var place = model.markers_obj[pos];
     var position = place.position;
     var lat = place.position.lat;
     var lng = place.position.lng;
@@ -84,64 +79,64 @@ var Functions = function(){
     var marker = new google.maps.Marker({
       position: {lat: lat, lng: lng},
       title: place.geocode.formatted_address,
-      map: app.model.map,
+      map: model.map,
       visible: false
     });
-    marker.addListener('click', app.viewmodel.handleMarkerClick);
-    marker["yelp_rating"] = "";
+    marker.addListener('click', viewmodel.handleMarkerClick);
     marker["gAddress"] = marker.title;
     marker.title = place.userTitle;
+    marker.koTitle = ko.observable(place.userTitle);
+    marker.koVisible = ko.observable(marker.getVisible());
     marker["coords"] = pos;
     return marker;
   }
 
   this.gotGeocodes = function(){
-    if (app.model.map.data){
-      app.viewmodel.getMarkers();
+    if (model.map.data){
+      viewmodel.getMarkers();
     }
 
   };
   this.getGeocodes = function(){
-    app.geocoder = new google.maps.Geocoder();
-    app.requests_to_make = app.i.fav_strings.length;
-    app.requests_made = 0
-    app.i.fav_strings.forEach(function(spot){
-      app.f.getGeocode(spot);
+    window.geocoder = new google.maps.Geocoder();
+    window.requests_to_make = i.fav_strings.length;
+    window.requests_made = 0
+    i.fav_strings.forEach(function(spot){
+      f.getGeocode(spot);
     });
   };
 
   this.ggccb = function(current){
-    app.viewmodel.getYelp(current);
+    viewmodel.getYelp(current);
     return current;
     //add Yelp here
   }
   this.getGeocode = function(spot){
-        var out;
-    app.geocoder.geocode({'address': spot}, function(results, status){
+    var out;
+    window.geocoder.geocode({'address': spot}, function(results, status){
       var current = results[0];
-      app.requests_made += 1;
+      window.requests_made += 1;
       if (current.place_id){
         out = current;
         var lat = current.geometry.location.lat();
         var lng = current.geometry.location.lng();
         var position = {lat: lat, lng: lng};
         var posString = JSON.stringify(position);
-        app.model.places_arr.push(current.place_id);
-        app.model.markers_obj[posString] = {};
-        app.model.markers_obj[posString]['geocode'] = current;
-        app.model.markers_obj[posString]['position'] = position;
-        app.model.markers_obj[posString]['userTitle'] = spot;
-        app.model.markers_obj[posString]['posString'] = posString;
-        app.f.ggccb(app.model.markers_obj[posString]);
+        model.places_arr.push(current.place_id);
+        model.markers_obj[posString] = {};
+        model.markers_obj[posString]['geocode'] = current;
+        model.markers_obj[posString]['position'] = position;
+        model.markers_obj[posString]['userTitle'] = spot;
+        model.markers_obj[posString]['posString'] = posString;
+        f.ggccb(model.markers_obj[posString]);
 
       } else {
         console.error('unable to find' + spot);
       }
-      if (app.requests_made == app.requests_to_make) {
-        app.viewmodel.geoCodesLoaded = true;
-        app.f.gotGeocodes();
+      if (window.requests_made == window.requests_to_make) {
+        viewmodel.geoCodesLoaded = true;
+        f.gotGeocodes();
       }
-
     });
     return out;
   }
@@ -151,21 +146,21 @@ var Functions = function(){
     if (window.innerWidth < 330 ){
       initial_zoom = 10.5;
     }
-    app.model.map = new google.maps.Map(document.getElementById('map'), {
+    model.map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 37.685839, lng: -122.366792},
       zoom: initial_zoom,
       styles: styles,
       mapTypeControl: false,
     });
-    if (app.model.geocodesLoaded){
-     app.viewmodel.getMarkers();
+    if (model.geocodesLoaded){
+     viewmodel.getMarkers();
     }
   };
   this.loadGoogle = function(key){
       var tag = document.createElement('script');
       tag.async = true;
       tag.defer = true;
-      tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ key +'&v=3&callback=app.viewmodel.googleLoaded';
+      tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ key +'&v=3&callback=viewmodel.googleLoaded';
       var firstScriptTag = document.getElementsByTagName('script')[0];
       firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
     };
@@ -247,10 +242,12 @@ var Info = function(){
   ];
 };
 
-app.initialize_static_data = function() {
-  app.i = new Info();
-  app.f = new Functions();
+var initialize_static_data = function() {
+  window.i = new Info();
+  window.f = new Functions();
 };
 
+if (typeof initialization_sequence == 'function') {
+    initialization_sequence();
+}
 
-(app.initialization_sequence || Function)();
