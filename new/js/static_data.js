@@ -1,6 +1,21 @@
 
 var Functions = function(){
 
+  this.filterMarkers = function() {
+    var filter = viewmodel.textInFilter();
+    console.log(filter);
+    for (var i = 0; i < viewmodel.markers_arr().length; i++){
+      var name = viewmodel.markers_arr()[i].title;
+      if (viewmodel.markers_arr()[i].title.search(filter) > -1 && (filter.length > 0)) {
+        viewmodel.markers_arr()[i].setVisible(false);
+        viewmodel.markers_arr()[i].koVisible(false);
+      } else {
+        viewmodel.markers_arr()[i].setVisible(true);
+        viewmodel.markers_arr()[i].koVisible(true);
+      }
+    }
+  }
+
   this.refreshMarker = function(markerObj){
     if (markerObj["yelp"] && markerObj.yelp["name"]) {
       markerObj.marker.setTitle(markerObj.yelp.name);

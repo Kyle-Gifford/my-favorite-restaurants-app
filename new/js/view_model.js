@@ -2,8 +2,8 @@
 var AppViewModel = function(){
 
   this.keyPressed = function(){
-    console.info('this', this);
-    //todo
+    console.info('tex', viewmodel.textInFilter());
+    f.filterMarkers();
   };
 
   this.textInFilter = ko.observable("");
