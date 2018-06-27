@@ -26,7 +26,7 @@ var AppViewModel = function(){
   this.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0);
 
   this.handleMarkerClick = function(){
-    console.info('this', this);
+    console.info('hmc', this);
     console.info('coords', this.coords);
     var coords = this.coords;
   }

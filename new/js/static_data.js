@@ -98,6 +98,10 @@ var Functions = function(){
       map: model.map,
       visible: false
     });
+    var window = new google.maps.InfoWindow({
+      position: {lat: lat, lng: lng}
+    });
+    place["window"] = window;
     marker.addListener('click', viewmodel.handleMarkerClick);
     marker["gAddress"] = marker.title;
     marker.title = place.userTitle;
