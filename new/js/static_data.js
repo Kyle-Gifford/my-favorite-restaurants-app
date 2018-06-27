@@ -2,11 +2,12 @@
 var Functions = function(){
 
   this.filterMarkers = function() {
-    var filter = viewmodel.textInFilter();
-    console.log(filter);
+
     for (var i = 0; i < viewmodel.markers_arr().length; i++){
-      var name = viewmodel.markers_arr()[i].title;
-      if (viewmodel.markers_arr()[i].title.search(filter) > -1 && (filter.length > 0)) {
+      var name = viewmodel.markers_arr()[i].title.toLowerCase();
+      var filter = viewmodel.textInFilter().toLowerCase();
+      console.info('nf', name, filter);
+      if (name.indexOf(filter) != -1 && (filter.length > 0)){
         viewmodel.markers_arr()[i].setVisible(false);
         viewmodel.markers_arr()[i].koVisible(false);
       } else {

@@ -2,7 +2,6 @@
 var AppViewModel = function(){
 
   this.keyPressed = function(){
-    console.info('tex', viewmodel.textInFilter());
     f.filterMarkers();
   };
 
