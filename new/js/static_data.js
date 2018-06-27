@@ -5,9 +5,11 @@ var app = window.app || app || {};
 var Functions = function(){
 
   this.refreshMarker = function(markerObj){
-
-    if (markerObj.yelp.name)
-    markerObj.marker.title = markerObj.yelp.name || markerObj.marker.title;
+    if (markerObj["yelp"] && markerObj.yelp["name"]) {
+      markerObj.marker.setTitle(markerObj.yelp.name)
+      markerObj.marker["yelp_data"] = markerObj["yelp"];
+      markerObj.marker.setVisible(true);
+    }
     return markerObj;
   }
 
@@ -21,11 +23,15 @@ var Functions = function(){
     return app.model.markers_obj;
   }
   this.rmcb = function(){
-    console.log('refreshMarkers completed');
+
   }
 
 
-  this.addYelpRating = function(restaurant){
+  this.addYelpInfo = function(restaurant){
+
+
+
+
     var token = 'Bearer ' + app.model.keys.yelp_token;
     $.ajax({
         url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
@@ -35,13 +41,17 @@ var Functions = function(){
             location: restaurant.geocode.formatted_address,
             latitude: restaurant.position.lat,
             longitude: restaurant.position.lng,
-            radius: 30,
-            sort_by: "distance"
+            radius: 50,
+            sort_by: "best_match",
+            limit: 1
         },
         success: function( response ) {
-                    if (response["businesses"]) {
+          console.log('VrV : ');
+          console.log(response);
+          if (response["businesses"]) {
             app.model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
             app.viewmodel.menuItems.push(app.model.markers_obj[restaurant.posString]);
+            app.viewmodel.gotYelp(app.model.markers_obj[restaurant.posString])
           } else {
             console.error(('yelp unable to find ' + restaurant.geocode.formatted_address))
           }
@@ -56,6 +66,7 @@ var Functions = function(){
         for (var pos in obj){
       var markerObj = {};
       obj[pos]["marker"] = app.f.getMarkerFromPos(pos);
+      app.model.markers_arr.push(obj[pos]["marker"]);
     }
     return app.f.markersAdded(obj);
   }
@@ -72,14 +83,16 @@ var Functions = function(){
 
     var marker = new google.maps.Marker({
       position: {lat: lat, lng: lng},
-      map: app.model.map,
       title: place.geocode.formatted_address,
+      map: app.model.map,
+      visible: false
     });
     marker.addListener('click', app.viewmodel.handleMarkerClick);
+    marker["yelp_rating"] = "";
     marker["gAddress"] = marker.title;
     marker.title = place.userTitle;
     marker["coords"] = pos;
-        return marker;
+    return marker;
   }
 
   this.gotGeocodes = function(){
@@ -97,9 +110,10 @@ var Functions = function(){
     });
   };
 
-  this.ggccb = function(spot, current){
-        app.viewmodel.getYelp(current);
+  this.ggccb = function(current){
+    app.viewmodel.getYelp(current);
     return current;
+    //add Yelp here
   }
   this.getGeocode = function(spot){
         var out;
@@ -107,9 +121,6 @@ var Functions = function(){
       var current = results[0];
       app.requests_made += 1;
       if (current.place_id){
-        //get yelp
-        console.log('1');
-        console.log('')
         out = current;
         var lat = current.geometry.location.lat();
         var lng = current.geometry.location.lng();
@@ -121,7 +132,7 @@ var Functions = function(){
         app.model.markers_obj[posString]['position'] = position;
         app.model.markers_obj[posString]['userTitle'] = spot;
         app.model.markers_obj[posString]['posString'] = posString;
-        app.f.ggccb(spot, app.model.markers_obj[posString]);
+        app.f.ggccb(app.model.markers_obj[posString]);
 
       } else {
         console.error('unable to find' + spot);
@@ -164,8 +175,10 @@ var Functions = function(){
 
 
 var Info = function(){
-  this.zip = 94110;
   this.fav_strings =  ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco', 'Las Pencas, South San Francisco'];
+
+  // this.fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco', 'Las Pencas, South San Francisco', "Tony's Pizza, north beach sf"]
+
   this.styles = [
     {
       featureType: 'water',

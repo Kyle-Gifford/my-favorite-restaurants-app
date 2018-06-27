@@ -10,11 +10,10 @@ var AppViewModel = function(){
   this.geocodesLoaded = false;
 
   this.handleMarkerClick = function(){
-    console.log(this);
     var coords = this.coords;
   }
 
-  this.menuItems = ko.observableArray();
+  this.menuItems = ko.observableArray(app.model.markers_arr());
 
   this.googleLoaded = function(){
     app.f.initMap(app.i.styles);
@@ -22,12 +21,14 @@ var AppViewModel = function(){
   };
 
   this.mapLoaded = function() {
+  }
 
+  this.gotYelp = function(restaurant) {
+    app.f.refreshMarker(restaurant);
   }
 
   this.getYelp = function(obj){
-    app.f.addYelpRating(obj);
-    // app.f.refreshMarkers(obj);
+    app.f.addYelpInfo(obj);
   }
 
   this.initialize = function(self){
