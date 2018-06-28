@@ -119,14 +119,13 @@ var Functions = function(){
     })
   }
 
-
-
   this.filterMarkers = function() {
     vm.locs_arr().forEach(function(loc){
       var name = model.locs[loc["coords"]].marker.title.toLowerCase();
       var filter = vm.textInFilter().toLowerCase();
-      if (name.indexOf(filter) != -1 && (filter.length > 0)){
+      if (name.indexOf(filter) == -1 && (filter.length > 0)){
         model.locs[loc["coords"]].marker.setVisible(false)
+        model.locs[loc["coords"]].infowindow.close();
         loc.geodata.geovisible(false);
       } else {
         model.locs[loc["coords"]].marker.setVisible(true)
