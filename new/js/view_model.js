@@ -8,10 +8,23 @@ var AppViewModel = function(){
   }
 
   this.setBindings = function(self){
+    self.activeItem = ko.observable({"Yelp ratings loading": "", current: true});
     self.textInFilter = ko.observable("")
     self.locs_arr = ko.observableArray()
     self.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0)
     self.markersSearched = 0;
+    self.yelpReviewCalls = 0;
+    self.yelpDetailsCalls = 0;
+  }
+
+  this.yelpRatingAdded = function(loc){
+    //todo call this function when yelp rating added
+    //todo if its first yelp info change menuinfo 'loading message' to 'Yelp discriptions loading'
+  }
+
+  this.yelpDiscriptionAdded = function(loc){
+    //todo call this function when yelp description added
+    //todo if first description clear menuinfo
   }
 
   this.googleLoaded = function(){
@@ -39,7 +52,7 @@ var AppViewModel = function(){
   this.gotGeocode = function(c, o){
     f.addLocToVM(c, o);
     f.getMarker(c, o);//todo
-    f.getYelp(c, o);//todo
+    f.getYelp(c, o, f, model, vm);//todo
   }
 
   this.keyPressed = function(){

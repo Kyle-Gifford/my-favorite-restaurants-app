@@ -8,9 +8,11 @@ var Functions = function(){
     o.infowindow.setContent(o.marker["yelp"].name + "<br>" + "Yelp rating : " + o.marker["yelp"].rating);
     o.marker.setTitle(o.marker["yelp"].name);
     o.geodata.koTitle(o.marker["yelp"].name);
+
+    return o.marker.yelp;
   }
 
-  this.getYelp = function(c, o){
+  this.getYelp = function(c, o, f, model, vm){
     var token = 'Bearer ' + model.keys.yelp_token
     var request_obj = {
         url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
@@ -33,6 +35,7 @@ var Functions = function(){
         dataType: "json"}
     $.ajax(request_obj).done(function(d){
       if (d["businesses"] && d["businesses"].length) {
+        vm.yelpReviewCalls ++;
         return f.addYelp(c, o, d);
       } else {
         o.infowindow.setContent('unable to retreive yelp data');

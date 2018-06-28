@@ -25,7 +25,7 @@
             </form>
 
             <a class="dropdown-item" href="#"><strong>Kyle's Favorite Restaurants</strong></a>
-            <mmm data-bind="foreach: locs_arr">
+            <div class="locations" data-bind="foreach: locs_arr">
                 <a class="dropdown-item" href="#" data-bind="visible: geodata.geovisible">
                     <span class="dropdown-item" href="#">
                         <span data-bind="click: $parent.handleMenuItemClick">
@@ -34,9 +34,14 @@
                         </span>
                     </span>
                 </a>
-            </mmm>
+            </div>
+            <div class="dropdown-item" data-bind="with: activeItem">
+                <span data-bind="text: yelpDisc">
+                </span>
+            </div>
       </div>
     </div>
+    <!-- gotGeocode new  -->
 
 
 
