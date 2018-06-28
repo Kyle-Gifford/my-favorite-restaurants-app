@@ -1,196 +1,188 @@
 
 var Functions = function(){
 
-  this.filterMarkers = function() {
+  this.addYelp = function(c, o, d){
+    o.marker["yelp"] = d["businesses"][0]
+  }
 
-    for (var i = 0; i < viewmodel.markers_arr().length; i++){
-      var name = viewmodel.markers_arr()[i].title.toLowerCase();
-      var filter = viewmodel.textInFilter().toLowerCase();
-      console.info('nf', name, filter);
-      if (name.indexOf(filter) != -1 && (filter.length > 0)){
-        viewmodel.markers_arr()[i].setVisible(false);
-        viewmodel.markers_arr()[i].koVisible(false);
+  this.getYelp = function(c, o){
+    var token = 'Bearer ' + model.keys.yelp_token
+    var request_obj = {
+        url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
+        data: {
+          location: o.geodata.userTitle,
+          latitude: o.geodata.geometry.location.lat(),
+          longitude: o.geodata.geometry.location.lng(),
+          // radius: 50,
+          radius: 1,
+          sort_by: "best_match",
+          limit: 1
+        },
+        headers: {'Authorization': token},
+        error: function(xhr,status,error){
+          console.error(('yelp unable to find ' + o.geodata.userTitle))
+          return "yelp unable to find location";
+        },
+        dataType: "json"}
+    $.ajax(request_obj).done(function(d){
+      if (d["businesses"] && d["businesses"].length) {
+        return f.addYelp(c, o, d);
       } else {
-        viewmodel.markers_arr()[i].setVisible(true);
-        viewmodel.markers_arr()[i].koVisible(true);
+        console.error(('yelp unable to find ' + o.geodata.userTitle))
+        return "yelp unable to find location";
+      }
+    });
+  };
+
+  this.addMarker = function(marker){
+    model.locs[marker.coords]["marker"] = marker;
+    model.locs[marker.coords].geodata.geovisible = ko.observable(model.locs[marker.coords]["marker"].visible);
+    var found = false;
+    var j = 0;
+    while ( j < vm.locs_arr().length && !found){
+      console.log(j);
+      if (vm.locs_arr()[j].coords === marker.coords){
+        found = true;
+        vm.locs_arr()[j].marker = model.locs[marker.coords]["marker"];
       }
     }
-  }
-
-  this.refreshMarker = function(markerObj){
-    if (markerObj["yelp"] && markerObj.yelp["name"]) {
-      markerObj.marker.setTitle(markerObj.yelp.name);
-      markerObj.marker.koTitle(markerObj.yelp.name);
-      markerObj.marker["yelp_data"] = markerObj["yelp"];
-
-      markerObj.marker.setVisible(true);
-      markerObj.marker.koVisible(true);
-
-
+    if (vm.markersSearched == i.fav_strings.length){
+      ko.applyBindings(vm);
     }
-    return markerObj;
+    f.filterMarkers();
   }
 
-
-  this.refreshMarkers = function(){
-
-    for (var marker in model.markers_obj){
-      this.refreshMarker(model.markers_obj[marker]);
-    }
-    this.rmcb();
-    return model.markers_obj;
-  }
-  this.rmcb = function(){
-
-  }
-
-
-  this.addYelpInfo = function(restaurant){
-    var token = 'Bearer ' + model.keys.yelp_token;
-    $.ajax({
-        url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
-        headers: {'Authorization': token},
-        dataType: "json",
-        data: {
-            location: restaurant.geocode.formatted_address,
-            latitude: restaurant.position.lat,
-            longitude: restaurant.position.lng,
-            radius: 50,
-            sort_by: "best_match",
-            limit: 1
-        },
-        success: function( response ) {
-          if (response["businesses"]) {
-            model.markers_obj[restaurant.posString]["yelp"] = response["businesses"][0];
-            viewmodel.gotYelp(model.markers_obj[restaurant.posString])
-          } else {
-            console.error(('yelp unable to find ' + restaurant.geocode.formatted_address))
-          }
-
-          }
-    });
-  };
-
-  this.addMarkersToObj = function(){
-    var placesService = new google.maps.places.PlacesService(model.map);
-    var obj = model.markers_obj;
-    for (var pos in obj){
-      var markerObj = {};
-      obj[pos]["marker"] = f.getMarkerFromPos(pos);
-      viewmodel.markers_arr.push(obj[pos]["marker"]);
-    }
-    return f.markersAdded(obj);
-  }
-  this.markersAdded = function(obj){
-    this.refreshMarkers();
-    return obj;
-  }
-
-  this.getMarkerFromPos = function(pos){
-    var place = model.markers_obj[pos];
-    var position = place.position;
-    var lat = place.position.lat;
-    var lng = place.position.lng;
-
-    var marker = new google.maps.Marker({
-      position: {lat: lat, lng: lng},
-      title: place.geocode.formatted_address,
-      map: model.map,
-      visible: false
-    });
-    var window = new google.maps.InfoWindow({
+  this.getMarker = function(pos){
+    vm.markersSearched ++;
+    var placesService = new google.maps.places.PlacesService(model.map)
+    var place = model.locs[pos]
+    var lat = place.geodata.geometry.location.lat()
+    var lng = place.geodata.geometry.location.lng()
+    var infowindow = new google.maps.InfoWindow({
+      content: 'hi',
       position: {lat: lat, lng: lng}
     });
-    place["window"] = window;
-    marker.addListener('click', viewmodel.handleMarkerClick);
-    marker["gAddress"] = marker.title;
-    marker.title = place.userTitle;
-    marker.koTitle = ko.observable(place.userTitle);
-    marker.koVisible = ko.observable(marker.getVisible());
-    marker["coords"] = pos;
-    return marker;
+    var marker = new google.maps.Marker({
+      position: {lat: lat, lng: lng},
+      title: place.geodata.userTitle,
+      map: model.map,
+      visible: false
+    })
+    marker.addListener('click', function() {
+      vm.handleMarkerClick(marker, infowindow);
+    });
+    marker["coords"] = pos
+    return this.addMarker(marker);
   }
 
-  this.gotGeocodes = function(){
-    if (model.map.data){
-      viewmodel.getMarkers();
-    }
+  this.addLocToVM = function(coords){
+    vm.locs_arr.unshift({coords: model.locs[coords]["coords"]});
+    vm.locs_arr()[0]["geodata"] = model.locs[coords].geodata;
+  }
 
-  };
+  this.addGeocode = function(code, query){
+    window.requests_made += 1;
+    var latlng = JSON.stringify({lat: code.geometry.location.lat(), lng: code.geometry.location.lng()});
+    var obj = {"geodata": code}
+    obj["geodata"]["userTitle"] = query;
+    model.locs[latlng] = obj;
+    model.locs[latlng]["coords"] = latlng;
+    model.locs[latlng]["geodata"]["visible"] = false;
+    return vm.gotGeocode(latlng, model.locs[latlng]);
+  }
+
+  this.getGeocode = function(spot){
+    window.geocoder.geocode({'address': spot}, function(results, status){
+      out = results[0]
+      out["geovisible"] = ko.observable(false);
+      if (!out.place_id){
+        console.error('unable to find' + spot)
+      } else {
+        return f.addGeocode(out, spot);
+      }
+    })
+  }
+
   this.getGeocodes = function(){
-    window.geocoder = new google.maps.Geocoder();
-    window.requests_to_make = i.fav_strings.length;
+    window.geocoder = new google.maps.Geocoder()
+    window.requests_to_make = i.fav_strings.length
     window.requests_made = 0
     i.fav_strings.forEach(function(spot){
       f.getGeocode(spot);
+    })
+  }
+
+  this.toggleInfoWindow = function(window){
+    if (window.map) {
+      window.close()
+    } else {
+      window.open(model.map)
+    }
+  }
+
+  this.filterMarkers = function() {
+    vm.locs_arr().forEach(function(loc){
+      var name = model.locs[loc["coords"]].marker.title.toLowerCase();
+      var filter = vm.textInFilter().toLowerCase();
+      if (name.indexOf(filter) != -1 && (filter.length > 0)){
+        model.locs[loc["coords"]].marker.setVisible(false)
+        loc.geodata.geovisible(false);
+      } else {
+        model.locs[loc["coords"]].marker.setVisible(true)
+        loc.geodata.geovisible(true);
+      }
     });
   };
 
-  this.ggccb = function(current){
-    viewmodel.getYelp(current);
-    return current;
-    //add Yelp here
+  this.refreshMarker = function(obj){
+    if (obj.marker && obj["yelp"] && obj.yelp["name"]) {
+      console.log('VmoV : ')
+      console.log(obj)
+      obj.marker.setTitle(obj.yelp.name)
+      obj.marker["yelp_data"] = obj["yelp"]
+      vm.markers()[obj["posString"]].marker.setVisible(true)
+    }
+    return obj
   }
-  this.getGeocode = function(spot){
-    var out;
-    window.geocoder.geocode({'address': spot}, function(results, status){
-      var current = results[0];
-      window.requests_made += 1;
-      if (current.place_id){
-        out = current;
-        var lat = current.geometry.location.lat();
-        var lng = current.geometry.location.lng();
-        var position = {lat: lat, lng: lng};
-        var posString = JSON.stringify(position);
-        model.places_arr.push(current.place_id);
-        model.markers_obj[posString] = {};
-        model.markers_obj[posString]['geocode'] = current;
-        model.markers_obj[posString]['position'] = position;
-        model.markers_obj[posString]['userTitle'] = spot;
-        model.markers_obj[posString]['posString'] = posString;
-        f.ggccb(model.markers_obj[posString]);
 
-      } else {
-        console.error('unable to find' + spot);
-      }
-      if (window.requests_made == window.requests_to_make) {
-        viewmodel.geoCodesLoaded = true;
-        f.gotGeocodes();
-      }
-    });
-    return out;
+  this.refreshMarkers = function(){
+
+    for (var marker in vm.markers()){
+      this.refreshMarker(vm.markers()[marker])
+    }
+    this.rmcb()
+    return vm.markers()
+  }
+
+  this.rmcb = function(){
   }
 
   this.initMap = function(styles, callback) {
-    var initial_zoom = 11;
+    var initial_zoom = 11
     if (window.innerWidth < 330 ){
-      initial_zoom = 10.5;
+      initial_zoom = 10.5
     }
     model.map = new google.maps.Map(document.getElementById('map'), {
       center: {lat: 37.685839, lng: -122.366792},
       zoom: initial_zoom,
       styles: styles,
       mapTypeControl: false,
-    });
+    })
     if (model.geocodesLoaded){
-     viewmodel.getMarkers();
+     vm.gotGeocodes()
     }
-  };
-  this.loadGoogle = function(key){
-      var tag = document.createElement('script');
-      tag.async = true;
-      tag.defer = true;
-      tag.src = 'https://maps.googleapis.com/maps/api/js?libraries=places&key='+ key +'&v=3&callback=viewmodel.googleLoaded';
-      var firstScriptTag = document.getElementsByTagName('script')[0];
-      firstScriptTag.parentNode.insertBefore(tag, firstScriptTag);
-    };
+  }
 
 
-}
+
+};
 
 
 var Info = function(){
-  this.fav_strings =  ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco', 'Las Pencas, South San Francisco'];
+
+  this.fav_strings = ['Las Pencas, South San Francisco'];
+
+  // this.fav_strings =  ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco', 'Las Pencas, South San Francisco'];
 
   // this.fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco', 'Las Pencas, South San Francisco', "Tony's Pizza, north beach sf"]
 
@@ -269,5 +261,5 @@ var initialize_static_data = function() {
 
 if (typeof initialization_sequence == 'function') {
     initialization_sequence();
-}
+};
 

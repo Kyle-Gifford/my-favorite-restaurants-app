@@ -10,12 +10,6 @@
 </head>
 <body class ="table table-responsive">
 
-    <!-- <div id="koContainer">
-        <ul data-bind="foreach: markers_arr">
-            <li data-bind="text: koTitle"></li>
-        </ul>
-    </div> -->
-
     <div class="dropdown" data-bind="event: {keyup: keyPressed}">
       <button class="btn btn-secondary dropdown-toggle" type="button" id="dropdownMenuButton" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false"  data-bind="click: handleMenuClick">
         Menu
@@ -31,27 +25,30 @@
             </form>
 
             <a class="dropdown-item" href="#"><strong>Kyle's Favorite Restaurants</strong></a>
-            <span data-bind="foreach: markers_arr">
-                <!-- <a class="dropdown-item" href="#" data-bind="visible: $data.visible"> -->
-                <a class="dropdown-item" href="#" data-bind="visible: $data.koVisible">
-                    <span data-bind="click: $parent.handleMenuItemClick">
-                        <span data-bind="text: $data.koTitle">
+            <mmm data-bind="foreach: locs_arr">
+                <a class="dropdown-item" href="#" data-bind="visible: geodata.geovisible">
+                    <span class="dropdown-item" href="#">
+                        <span data-bind="click: $parent.handleMenuItemClick">
+                            <span data-bind="text: marker.title">
+                            </span>
                         </span>
                     </span>
                 </a>
-            </span>
+            </mmm>
       </div>
     </div>
 
 
 
     <div id="map"></div>
-    <script type='text/javascript' src='https://cdnjs.cloudflare.com/ajax/libs/knockout/3.4.2/knockout-min.js'></script>
-    <script sync type='text/javascript' src='js/config.js'></script>
-    <script sync type='text/javascript' src='js/static_data.js'></script>
-    <script sync type='text/javascript' src='js/model.js'></script>
-    <script sync type='text/javascript' src='js/view_model.js'></script>
-    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js"></script>
-
+    <script type='text/javascript' src='js/static_data.js'></script>
+    <script type='text/javascript' src='js/config.js'></script>
+    <script type='text/javascript' src='js/model.js'></script>
+    <script type='text/javascript' src='js/view_model.js'></script>
+    <script
+  src="https://code.jquery.com/jquery-3.3.1.js"
+  integrity="sha256-2Kok7MbOyxpgUVvAk/HJ2jigOSYS2auK4Pfzbm7uH60="
+  crossorigin="anonymous"></script>
+  <script></script>
 </body>
 </html>

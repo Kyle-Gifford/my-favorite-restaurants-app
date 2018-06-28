@@ -1,79 +1,74 @@
 
 var AppViewModel = function(){
 
-  this.keyPressed = function(){
-    f.filterMarkers();
-  };
+  this.init = function(self){
+    console.log('VthisV : ');
+    console.log(this);
+    self.setBindings(self);
+  }
 
-  this.textInFilter = ko.observable("");
+  this.setBindings = function(self){
+    self.textInFilter = ko.observable("")
+    self.locs_arr = ko.observableArray()
+    self.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0)
+    self.markersSearched = 0;
+  }
 
-  this.getMarkers = function(){
-    f.addMarkersToObj();
-  };
-
-  this.menuToggle = function(){
-    //todo
-  };
-
-  this.handleMenuClick = function(){
-    viewmodel.dropdownVisible(!viewmodel.dropdownVisible());
-  };
-
-  this.geocodesLoaded = false;
-
-  this.markers_arr = ko.observableArray();
-
-  this.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0);
-
-  this.handleMarkerClick = function(){
-    console.info('hmc', this);
-    console.info('coords', this.coords);
-    var coords = this.coords;
+  this.googleLoaded = function(){
+    f.initMap(window.i.styles)
+    f.getGeocodes()
   }
 
   this.handleMenuItemClick = function(){
-    console.info('here', this);
-  };
-
-  this.googleLoaded = function(){
-    f.initMap(window.i.styles);
-    f.getGeocodes();
-  };
-
-  this.mapLoaded = function() {
+    f.toggleInfoWindow(this)
+    //toggleInfoWindow
   }
 
-  this.gotYelp = function(restaurant) {
-    f.refreshMarker(restaurant);
+  this.handleMarkerClick = function(marker, infowindow){
+    console.log('VinV : ');
+    console.log(marker);
+    console.log('VthisV : ');
+    console.log(infowindow);
+    var coords = self.coords;
+    f.toggleInfoWindow(infowindow);
+    // f.toggleInfoWindow(self);
   }
 
-  this.getYelp = function(obj){
-    f.addYelpInfo(obj);
+
+  this.gotGeocode = function(c, o){
+    f.addLocToVM(c, o);
+    f.getMarker(c, o);//todo
+    f.getYelp(c, o);//todo
   }
 
-  this.initialize = function(self){
-    f.loadGoogle(model.keys.google_key);
-  };
-  this.init_callback = function(self){
+  this.keyPressed = function(){
+    f.filterMarkers()
+  }
 
-  };
-  var init = function(self){
-    self.initialize(self);
-    self.init_callback(self);
-  };
-  init(this);
+  this.getMarkers = function(){
+    f.addMarkersToObj()
+  }
+
+  this.menuToggle = function(){
+    //todo
+  }
+
+  this.handleMenuClick = function(){
+    vm.dropdownVisible(!vm.dropdownVisible())
+  }
+
 };
 
 
 //for last js file to load:
 var initialization_sequence = function(){
-  if (!initialize_static_data || !initialize_model) {
+  if ((!typeof initialize_static_data === "function") || (!typeof initialize_model === "function")) {
     return false;
   } else {
     window.initialize_static_data();
     window.initialize_model();
-    window.viewmodel = new AppViewModel();
-    ko.applyBindings(window.viewmodel);
+    window.vm = new AppViewModel();
+    vm.init(vm)
   }
 };
 
