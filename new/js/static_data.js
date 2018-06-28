@@ -2,7 +2,12 @@
 var Functions = function(){
 
   this.addYelp = function(c, o, d){
-    o.marker["yelp"] = d["businesses"][0]
+    o.marker["yelp"] = d["businesses"][0];
+    console.log('VthisV : ');
+    console.log(d);
+    o.infowindow.setContent(o.marker["yelp"].name + "<br>" + "Yelp rating : " + o.marker["yelp"].rating);
+    o.marker.setTitle(o.marker["yelp"].name);
+    o.geodata.koTitle(o.marker["yelp"].name);
   }
 
   this.getYelp = function(c, o){
@@ -59,7 +64,7 @@ var Functions = function(){
     var lat = place.geodata.geometry.location.lat()
     var lng = place.geodata.geometry.location.lng()
     var infowindow = new google.maps.InfoWindow({
-      content: 'hi',
+      content: 'loading yelp data...',
       position: {lat: lat, lng: lng}
     });
     var marker = new google.maps.Marker({
@@ -96,6 +101,7 @@ var Functions = function(){
     window.geocoder.geocode({'address': spot}, function(results, status){
       out = results[0]
       out["geovisible"] = ko.observable(false);
+      out["koTitle"] = ko.observable(spot);
       if (!out.place_id){
         console.error('unable to find' + spot)
       } else {
