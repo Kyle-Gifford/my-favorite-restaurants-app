@@ -68,6 +68,7 @@ var Functions = function(){
       map: model.map,
       visible: false
     })
+    place["infowindow"] = infowindow;
     marker.addListener('click', function() {
       vm.handleMarkerClick(marker, infowindow);
     });
@@ -112,13 +113,7 @@ var Functions = function(){
     })
   }
 
-  this.toggleInfoWindow = function(window){
-    if (window.map) {
-      window.close()
-    } else {
-      window.open(model.map)
-    }
-  }
+
 
   this.filterMarkers = function() {
     vm.locs_arr().forEach(function(loc){

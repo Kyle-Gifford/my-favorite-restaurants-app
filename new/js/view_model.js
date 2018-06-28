@@ -20,17 +20,25 @@ var AppViewModel = function(){
   }
 
   this.handleMenuItemClick = function(){
-    f.toggleInfoWindow(this)
+    console.log('VthisV : ');
+    console.log(this);
+    vm.toggleInfoWindow(this.marker);
     //toggleInfoWindow
   }
 
-  this.handleMarkerClick = function(marker, infowindow){
-    console.log('VinV : ');
+  this.toggleInfoWindow = function(marker){
+    if (model.locs[marker.coords].infowindow.map) {
+      model.locs[marker.coords].infowindow.close()
+    } else {
+      model.locs[marker.coords].infowindow.open(model.map);
+    }
+  }
+
+  this.handleMarkerClick = function(marker){
+    console.log('marker : ');
     console.log(marker);
-    console.log('VthisV : ');
-    console.log(infowindow);
     var coords = self.coords;
-    f.toggleInfoWindow(infowindow);
+    this.toggleInfoWindow(marker);
     // f.toggleInfoWindow(self);
   }
 
