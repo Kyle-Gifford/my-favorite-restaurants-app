@@ -2,13 +2,11 @@
 var AppViewModel = function(){
 
   this.init = function(self){
-    console.log('VthisV : ');
-    console.log(this);
     self.setBindings(self);
   }
 
   this.setBindings = function(self){
-    self.activeItem = ko.observable({"Yelp ratings loading": "", current: true});
+    self.activeItem = ko.observable({"yelpDisc": "Connecting to Yelp server", current: true});
     self.textInFilter = ko.observable("")
     self.locs_arr = ko.observableArray()
     self.dropdownVisible = ko.observable((window.innerWidth > 330) ? 1 : 0)
@@ -17,23 +15,28 @@ var AppViewModel = function(){
     self.yelpDetailsCalls = 0;
   }
 
-  this.yelpRatingAdded = function(loc){
-    //todo call this function when yelp rating added
-    //todo if its first yelp info change menuinfo 'loading message' to 'Yelp discriptions loading'
-  }
-
-  this.yelpDiscriptionAdded = function(loc){
-    //todo call this function when yelp description added
-    //todo if first description clear menuinfo
-  }
-
   this.googleLoaded = function(){
     f.initMap(window.i.styles)
     f.getGeocodes()
   }
 
+
+  this.gotGeocode = function(c, o){
+    f.addLocToVM(c, o);
+    f.getMarker(c, o);//todo
+    f.getYelp(c, o, f, model, vm);//todo
+  }
+
+  this.getMarkers = function(){
+    f.addMarkersToObj()
+  }
+
   this.handleMenuItemClick = function(){
     f.bounceAndToggleMarker(this.marker);
+  }
+
+  this.handleMarkerClick = function(marker){
+    f.bounceAndToggleMarker(marker);
   }
 
   this.toggleInfoWindow = function(marker){
@@ -44,32 +47,45 @@ var AppViewModel = function(){
     }
   }
 
-  this.handleMarkerClick = function(marker){
-    f.bounceAndToggleMarker(marker);
+  this.firstYelpObtained = function(){
+    var obj = this.activeItem()
+    obj["yelpDisc"] = 'Retreiving yelp details...';
+    this.activeItem(obj);
+  };
+
+  this.addYelpDetails = function(){
+    //todo
+  }
+
+  this.yelpRatingAdded = function(loc){
+    //todo call this function when yelp rating added
+    //todo if its first yelp info change menuinfo 'loading message' to 'Yelp discriptions loading'
+    //if active item display
+  }
+
+  this.yelpDiscriptionAdded = function(loc){
+    //todo call this function when yelp description added
+    //todo if first description clear menuinfo
   }
 
 
-  this.gotGeocode = function(c, o){
-    f.addLocToVM(c, o);
-    f.getMarker(c, o);//todo
-    f.getYelp(c, o, f, model, vm);//todo
-  }
+
+
+
+
+
 
   this.keyPressed = function(){
     f.filterMarkers()
   }
 
-  this.getMarkers = function(){
-    f.addMarkersToObj()
-  }
 
-  this.menuToggle = function(){
-    //todo
-  }
 
   this.handleMenuClick = function(){
     vm.dropdownVisible(!vm.dropdownVisible())
   }
+
+
 
 };
 

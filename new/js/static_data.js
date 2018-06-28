@@ -12,39 +12,6 @@ var Functions = function(){
     return o.marker.yelp;
   }
 
-  this.getYelp = function(c, o, f, model, vm){
-    var token = 'Bearer ' + model.keys.yelp_token
-    var request_obj = {
-        url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
-        data: {
-          location: o.geodata.userTitle,
-          // location: 'zzzzzzzzz',
-          latitude: o.geodata.geometry.location.lat(),
-          longitude: o.geodata.geometry.location.lng(),
-          radius: 10,
-          // radius: 1,
-          sort_by: "best_match",
-          limit: 1
-        },
-        headers: {'Authorization': token},
-        error: function(xhr,status,error){
-          o.infowindow.setContent('unable to retreive yelp data');
-          window.alert(('unable to retreive yelp data for: ' + o.geodata.userTitle))
-          return "yelp unable to retreive location";
-        },
-        dataType: "json"}
-    $.ajax(request_obj).done(function(d){
-      if (d["businesses"] && d["businesses"].length) {
-        vm.yelpReviewCalls ++;
-        return f.addYelp(c, o, d);
-      } else {
-        o.infowindow.setContent('unable to retreive yelp data');
-        window.alert(('unable to retreive yelp data for: ' + o.geodata.userTitle))
-        return "yelp unable to retreive location";
-      }
-    });
-  };
-
   this.addMarker = function(marker){
     model.locs[marker.coords]["marker"] = marker;
     model.locs[marker.coords].geodata.geovisible = ko.observable(model.locs[marker.coords]["marker"].visible);
@@ -189,6 +156,43 @@ var Functions = function(){
      vm.gotGeocodes()
     }
   }
+
+
+  this.getYelp = function(c, o, f, model, vm){
+    var token = 'Bearer ' + model.keys.yelp_token
+    var request_obj = {
+        url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
+        data: {
+          location: o.geodata.userTitle,
+          // location: 'zzzzzzzzz',
+          latitude: o.geodata.geometry.location.lat(),
+          longitude: o.geodata.geometry.location.lng(),
+          radius: 10,
+          // radius: 1,
+          sort_by: "best_match",
+          limit: 1
+        },
+        headers: {'Authorization': token},
+        error: function(xhr,status,error){
+          o.infowindow.setContent('unable to retreive yelp data');
+          window.alert(('unable to retreive yelp data for: ' + o.geodata.userTitle))
+          return "yelp unable to retreive location";
+        },
+        dataType: "json"}
+    $.ajax(request_obj).done(function(d){
+      if (d["businesses"] && d["businesses"].length) {
+        vm.yelpReviewCalls ++;
+        if (vm.yelpReviewCalls == 1) {
+          vm.firstYelpObtained();
+        }
+        return f.addYelp(c, o, d);
+      } else {
+        o.infowindow.setContent('unable to retreive yelp data');
+        window.alert(('unable to retreive yelp data for: ' + o.geodata.userTitle))
+        return "yelp unable to retreive location";
+      }
+    });
+  };
 
 
 
