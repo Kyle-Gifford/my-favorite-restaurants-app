@@ -20,10 +20,7 @@ var AppViewModel = function(){
   }
 
   this.handleMenuItemClick = function(){
-    console.log('VthisV : ');
-    console.log(this);
-    vm.toggleInfoWindow(this.marker);
-    //toggleInfoWindow
+    f.bounceAndToggleMarker(this.marker);
   }
 
   this.toggleInfoWindow = function(marker){
@@ -35,11 +32,7 @@ var AppViewModel = function(){
   }
 
   this.handleMarkerClick = function(marker){
-    console.log('marker : ');
-    console.log(marker);
-    var coords = self.coords;
-    this.toggleInfoWindow(marker);
-    // f.toggleInfoWindow(self);
+    f.bounceAndToggleMarker(marker);
   }
 
 
