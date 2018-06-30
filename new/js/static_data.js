@@ -1,6 +1,9 @@
+// Helper functions and data for app
 
 var Functions = function(){
 
+  // Adds a marker to the model and binds the
+  // knockoutjs data to the view
   this.addMarker = function(marker){
     model.locs[marker.coords]["marker"] = marker;
     model.locs[marker.coords].geodata.geovisible = ko.observable(model.locs[marker.coords]["marker"].visible);
@@ -17,6 +20,7 @@ var Functions = function(){
     }
     f.filterMarkers();
   }
+
   this.bounceAndToggleMarker = function(marker){
     marker.setAnimation(null);
     marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -24,7 +28,8 @@ var Functions = function(){
       marker.setAnimation(null);
       vm.toggleInfoWindow(marker);
     }, 600);
-  };
+  }
+
   this.getMarker = function(pos){
     vm.markersSearched ++;
     var placesService = new google.maps.places.PlacesService(model.map)
@@ -48,12 +53,14 @@ var Functions = function(){
     marker["coords"] = pos
     return this.addMarker(marker);
   }
+
   this.addLocToVM = function(coords){
     vm.locs_arr.unshift({coords: model.locs[coords]["coords"]});
     vm.locs_arr()[0]["geodata"] = model.locs[coords].geodata;
     vm.locs_arr()[0]["yelpDisc"] = ko.observable(model.locs[coords].geodata.userTitle);
     model.locs[coords]["yelpDisc"] = ko.observable(vm.locs_arr()[0]["yelpDisc"]());
   }
+
   this.addGeocode = function(code, query){
     window.requests_made += 1;
     var latlng = JSON.stringify({lat: code.geometry.location.lat(), lng: code.geometry.location.lng()});
@@ -64,18 +71,20 @@ var Functions = function(){
     model.locs[latlng]["geodata"]["visible"] = false;
     return vm.gotGeocode(latlng, model.locs[latlng]);
   }
+
   this.getGeocode = function(spot){
     window.geocoder.geocode({'address': spot}, function(results, status){
-      out = results[0]
+      out = results[0];
       out["geovisible"] = ko.observable(false);
       out["koTitle"] = ko.observable(spot);
       if (!out.place_id){
-        console.error('unable to find' + spot)
+        console.error('unable to find' + spot);
       } else {
         return f.addGeocode(out, spot);
       }
     })
   }
+
   this.getGeocodes = function(){
     window.geocoder = new google.maps.Geocoder()
     window.requests_to_make = i.fav_strings.length
@@ -84,6 +93,7 @@ var Functions = function(){
       f.getGeocode(spot);
     })
   }
+
   this.filterMarkers = function() {
     vm.locs_arr().forEach(function(loc){
       var name = model.locs[loc["coords"]].marker.title.toLowerCase();
@@ -97,7 +107,8 @@ var Functions = function(){
         loc.geodata.geovisible(true);
       }
     });
-  };
+  }
+
   this.refreshMarker = function(obj){
     if (obj.marker && obj["yelp"] && obj.yelp["name"]) {
       console.log('VmoV : ')
@@ -108,6 +119,7 @@ var Functions = function(){
     }
     return obj
   }
+
   this.refreshMarkers = function(){
 
     for (var marker in vm.markers()){
@@ -116,8 +128,10 @@ var Functions = function(){
     this.rmcb()
     return vm.markers()
   }
+
   this.rmcb = function(){
   }
+
   this.initMap = function(styles, callback) {
     var initial_zoom = 11
     if (window.innerWidth < 330 ){
@@ -133,17 +147,18 @@ var Functions = function(){
      vm.gotGeocodes()
     }
   }
+
+  // Makes an ajax request to the yelp server
+  // to get yelp rating
   this.getYelp = function(c, o, f, model, vm){
     var token = 'Bearer ' + model.keys.yelp_token
     var request_obj = {
         url: 'https://cors-anywhere.herokuapp.com/https://api.yelp.com/v3/businesses/search',
         data: {
           location: o.geodata.userTitle,
-          // location: 'zzzzzzzzz',
           latitude: o.geodata.geometry.location.lat(),
           longitude: o.geodata.geometry.location.lng(),
           radius: 10,
-          // radius: 1,
           sort_by: "best_match",
           limit: 1
         },
@@ -163,11 +178,12 @@ var Functions = function(){
         return f.addYelp(c, o, d);
       } else {
         o.infowindow.setContent('unable to retreive yelp data');
-        window.alert(('unable to retreive yelp data for: ' + o.geodata.userTitle))
+        window.alert(('unable to retreive yelp data for: ' + o.geodata.userTitle));
         return "yelp unable to retreive location";
       }
     });
-  };
+  }
+
   this.addYelp = function(c, o, d){
 
     o.marker["yelp"] = d["businesses"][0];
@@ -177,16 +193,18 @@ var Functions = function(){
     return o.marker.yelp;
   }
 
-};
+}
 
 var Info = function(){
 
-  this.fav_strings = ['Las Pencas, South San Francisco'];
-
-  // this.fav_strings =  ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco', 'Las Pencas, South San Francisco'];
+  // These strings are some of my favorite restaurants.
+  // Have fun with putting your own restaurants in.
+  this.fav_strings = ['Las Pencas, South San Francisco']
 
   // this.fav_strings = ['Curry Up Now, San Mateo', 'El Castillito, Church St, San Francisco', 'Souvla, Hayes St, San Francisco', 'Las Pencas, South San Francisco', "Tony's Pizza, north beach sf"]
 
+
+  // Custom styling for the google map
   this.styles = [
     {
       featureType: 'water',
@@ -252,15 +270,15 @@ var Info = function(){
         { lightness: -25 }
       ]
     }
-  ];
-};
+  ]
+}
 
 var initialize_static_data = function() {
   window.i = new Info();
   window.f = new Functions();
-};
+}
 
 if (typeof initialization_sequence == 'function') {
     initialization_sequence();
-};
+}
 
