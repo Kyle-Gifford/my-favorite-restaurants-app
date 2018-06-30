@@ -1,17 +1,6 @@
 
 var Functions = function(){
 
-  this.addYelp = function(c, o, d){
-    o.marker["yelp"] = d["businesses"][0];
-    console.log('VthisV : ');
-    console.log(d);
-    o.infowindow.setContent(o.marker["yelp"].name + "<br>" + "Yelp rating : " + o.marker["yelp"].rating);
-    o.marker.setTitle(o.marker["yelp"].name);
-    o.geodata.koTitle(o.marker["yelp"].name);
-
-    return o.marker.yelp;
-  }
-
   this.addMarker = function(marker){
     model.locs[marker.coords]["marker"] = marker;
     model.locs[marker.coords].geodata.geovisible = ko.observable(model.locs[marker.coords]["marker"].visible);
@@ -29,7 +18,6 @@ var Functions = function(){
     }
     f.filterMarkers();
   }
-
   this.bounceAndToggleMarker = function(marker){
     marker.setAnimation(null);
     marker.setAnimation(google.maps.Animation.BOUNCE);
@@ -38,7 +26,6 @@ var Functions = function(){
       vm.toggleInfoWindow(marker);
     }, 600);
   };
-
   this.getMarker = function(pos){
     vm.markersSearched ++;
     var placesService = new google.maps.places.PlacesService(model.map)
@@ -62,14 +49,12 @@ var Functions = function(){
     marker["coords"] = pos
     return this.addMarker(marker);
   }
-
   this.addLocToVM = function(coords){
     vm.locs_arr.unshift({coords: model.locs[coords]["coords"]});
     vm.locs_arr()[0]["geodata"] = model.locs[coords].geodata;
     vm.locs_arr()[0]["yelpDisc"] = ko.observable(model.locs[coords].geodata.userTitle);
     model.locs[coords]["yelpDisc"] = ko.observable(vm.locs_arr()[0]["yelpDisc"]());
   }
-
   this.addGeocode = function(code, query){
     window.requests_made += 1;
     var latlng = JSON.stringify({lat: code.geometry.location.lat(), lng: code.geometry.location.lng()});
@@ -80,7 +65,6 @@ var Functions = function(){
     model.locs[latlng]["geodata"]["visible"] = false;
     return vm.gotGeocode(latlng, model.locs[latlng]);
   }
-
   this.getGeocode = function(spot){
     window.geocoder.geocode({'address': spot}, function(results, status){
       out = results[0]
@@ -93,7 +77,6 @@ var Functions = function(){
       }
     })
   }
-
   this.getGeocodes = function(){
     window.geocoder = new google.maps.Geocoder()
     window.requests_to_make = i.fav_strings.length
@@ -102,7 +85,6 @@ var Functions = function(){
       f.getGeocode(spot);
     })
   }
-
   this.filterMarkers = function() {
     vm.locs_arr().forEach(function(loc){
       var name = model.locs[loc["coords"]].marker.title.toLowerCase();
@@ -117,7 +99,6 @@ var Functions = function(){
       }
     });
   };
-
   this.refreshMarker = function(obj){
     if (obj.marker && obj["yelp"] && obj.yelp["name"]) {
       console.log('VmoV : ')
@@ -128,7 +109,6 @@ var Functions = function(){
     }
     return obj
   }
-
   this.refreshMarkers = function(){
 
     for (var marker in vm.markers()){
@@ -137,10 +117,8 @@ var Functions = function(){
     this.rmcb()
     return vm.markers()
   }
-
   this.rmcb = function(){
   }
-
   this.initMap = function(styles, callback) {
     var initial_zoom = 11
     if (window.innerWidth < 330 ){
@@ -156,8 +134,6 @@ var Functions = function(){
      vm.gotGeocodes()
     }
   }
-
-
   this.getYelp = function(c, o, f, model, vm){
     var token = 'Bearer ' + model.keys.yelp_token
     var request_obj = {
@@ -183,7 +159,7 @@ var Functions = function(){
       if (d["businesses"] && d["businesses"].length) {
         vm.yelpReviewCalls ++;
         if (vm.yelpReviewCalls == 1) {
-          vm.firstYelpObtained();
+          vm.firstYelpObtained(o);
         }
         return f.addYelp(c, o, d);
       } else {
@@ -193,15 +169,24 @@ var Functions = function(){
       }
     });
   };
+  this.addYelp = function(c, o, d){
 
+    o.marker["yelp"] = d["businesses"][0];
+    console.log('VthisV : ');
+    console.log(d);
 
+    o.infowindow.setContent(o.marker["yelp"].name + "<br>" + "Yelp rating : " + o.marker["yelp"].rating);
+    o.marker.setTitle(o.marker["yelp"].name);
+    o.geodata.koTitle(o.marker["yelp"].name);
+    vm.gotYelpRating(o);
+    return o.marker.yelp;
+  }
 
 };
 
-
 var Info = function(){
 
-  this.fav_strings = ['El Castillito, Church St, San Francisco'];
+  this.fav_strings = ['Las Pencas, South San Francisco'];
 
   // this.fav_strings =  ['Gracias Madre, Mission St', 'El Castillito, Church St, San Francisco', 'Las Pencas, South San Francisco'];
 
