@@ -7,7 +7,6 @@ var Functions = function(){
     var found = false;
     var j = 0;
     while ( j < vm.locs_arr().length && !found){
-      console.log(j);
       if (vm.locs_arr()[j].coords === marker.coords){
         found = true;
         vm.locs_arr()[j].marker = model.locs[marker.coords]["marker"];
@@ -172,13 +171,9 @@ var Functions = function(){
   this.addYelp = function(c, o, d){
 
     o.marker["yelp"] = d["businesses"][0];
-    console.log('VthisV : ');
-    console.log(d);
-
     o.infowindow.setContent(o.marker["yelp"].name + "<br>" + "Yelp rating : " + o.marker["yelp"].rating);
     o.marker.setTitle(o.marker["yelp"].name);
     o.geodata.koTitle(o.marker["yelp"].name);
-    vm.gotYelpRating(o);
     return o.marker.yelp;
   }
 
