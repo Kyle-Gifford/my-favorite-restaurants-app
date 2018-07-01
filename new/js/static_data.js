@@ -30,6 +30,7 @@ var Functions = function(){
     }, 600);
   }
 
+  // Retreives marker and infowindow from google maps API
   this.getMarker = function(pos){
     vm.markersSearched ++;
     var placesService = new google.maps.places.PlacesService(model.map)
@@ -47,6 +48,7 @@ var Functions = function(){
       visible: false
     })
     place["infowindow"] = infowindow;
+    // sets a listener for clicks to marker
     marker.addListener('click', function() {
       vm.handleMarkerClick(marker, infowindow);
     });
@@ -129,9 +131,7 @@ var Functions = function(){
     return vm.markers()
   }
 
-  this.rmcb = function(){
-  }
-
+  // Requests the map data from the Google API
   this.initMap = function(styles, callback) {
     var initial_zoom = 11
     if (window.innerWidth < 330 ){
@@ -143,9 +143,6 @@ var Functions = function(){
       styles: styles,
       mapTypeControl: false,
     })
-    if (model.geocodesLoaded){
-     vm.gotGeocodes()
-    }
   }
 
   // Makes an ajax request to the yelp server
@@ -185,7 +182,6 @@ var Functions = function(){
   }
 
   this.addYelp = function(c, o, d){
-
     o.marker["yelp"] = d["businesses"][0];
     o.infowindow.setContent(o.marker["yelp"].name + "<br>" + "Yelp rating : " + o.marker["yelp"].rating);
     o.marker.setTitle(o.marker["yelp"].name);

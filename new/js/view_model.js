@@ -17,9 +17,15 @@ var AppViewModel = function(){
     self.yelpDetailsCalls = 0;
   }
 
-  this.googleLoaded = function(){
-    f.initMap(window.i.styles);
-    f.getGeocodes();
+  this.googleLoaded = function(response){
+    if (!window.google){
+      o.infowindow.setContent('unable to retreive Google data');
+        window.alert(('unable to retreive Google map data'));
+        return "unable to load map from Google";
+    } else {
+      f.initMap(window.i.styles);
+      f.getGeocodes();
+    }
   }
 
   this.gotGeocode = function(c, modelobj){
@@ -62,21 +68,17 @@ var AppViewModel = function(){
     vm.dropdownVisible(!vm.dropdownVisible());
   }
 
-
 }
 
-
-//for last js file to load:
+// For last js file to load:
 var initialization_sequence = function(){
-  if ((!typeof initialize_static_data === "function") || (!typeof initialize_model === "function")) {
-    return false;
-  } else {
+  if (!((typeof initialize_static_data != 'function') || (typeof initialize_model != 'function'))) {
     window.initialize_static_data();
     window.initialize_model();
     window.vm = new AppViewModel();
-    vm.init(vm)
-  };};
-
+    vm.init(vm);
+  }
+};
 
 if (typeof initialization_sequence == 'function') {
     initialization_sequence();
